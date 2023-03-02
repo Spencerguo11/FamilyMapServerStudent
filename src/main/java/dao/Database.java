@@ -1,5 +1,7 @@
 package dao;
 
+import Model.Person;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -15,7 +17,6 @@ public class Database {
      */
     private Connection conn;
 
-
     /**
      * Open a connection and use the statements to initial transactions.
      * @return A connection
@@ -27,11 +28,10 @@ public class Database {
         try {
             // The Structure for this Connection is driver:language:path
             // The path assumes you start in the root of your project unless given a full file path
-            final String CONNECTION_URL = "jdbc:sqlite:familymap.sqlite";
+            final String CONNECTION_URL = "jdbc:sqlite:FamilyServer.sqlite";
 
             // Open a database connection to the file given in the path
             conn = DriverManager.getConnection(CONNECTION_URL);
-
             // Start a transaction
             conn.setAutoCommit(false);
         } catch (SQLException e) {

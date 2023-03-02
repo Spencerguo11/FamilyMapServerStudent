@@ -30,8 +30,8 @@ public class EventDAO {
     public void insert(Event event) throws DataAccessException {
         //We can structure our string to be similar to a sql command, but if we insert question
         //marks we can change them later with help from the statement
-        String sql = "INSERT INTO Events (EventID, AssociatedUsername, PersonID, Latitude, Longitude, " +
-                "Country, City, EventType, Year) VALUES(?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO Event (EventID, AssociatedUsername, PersonID, Latitude, Longitude, " +
+                "Country, City, EventType, Year) VALUES(?,?,?,?,?,?,?,?,?);";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             //Using the statements built-in set(type) functions we can pick the question mark we want
             //to fill in and give it a proper value. The first argument corresponds to the first
@@ -63,7 +63,7 @@ public class EventDAO {
     public Event find(String eventID) throws DataAccessException {
         Event event;
         ResultSet rs;
-        String sql = "SELECT * FROM Events WHERE EventID = ?;";
+        String sql = "SELECT * FROM Event WHERE EventID = ?;";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, eventID);
             rs = stmt.executeQuery();
@@ -89,7 +89,7 @@ public class EventDAO {
      * @throws DataAccessException throws data access exceptions
      */
     public void clear() throws DataAccessException {
-        String sql = "DELETE FROM Events";
+        String sql = "DELETE FROM Event;";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -99,22 +99,22 @@ public class EventDAO {
     }
 
 
-    /**
-     * Find the list of events for user
-     * @param username pass in a username
-     * @return a list of events
-     */
-    public List<Event> findForUser(String username){
-        // find a list of events by a username
-        return null;}
-
-
-    /**
-     * Clear events by a username
-     * @param username pass in a username
-     */
-    public void clearByUsername(String username){
-        // clear an event by a username;
-    }
+//    /**
+//     * Find the list of events for user
+//     * @param username pass in a username
+//     * @return a list of events
+//     */
+//    public List<Event> findForUser(String username){
+//        // find a list of events by a username
+//        return null;}
+//
+//
+//    /**
+//     * Clear events by a username
+//     * @param username pass in a username
+//     */
+//    public void clearByUsername(String username){
+//        // clear an event by a username;
+//    }
 
 }

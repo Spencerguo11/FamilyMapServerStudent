@@ -46,11 +46,7 @@ public class Person {
      */
     private String spouseID; //the id number of the spouse of a person
 
-    /**
-     * a boolean variables
-     */
 
-    private boolean success; // a boolean variables
 
     // constructor
 
@@ -64,10 +60,9 @@ public class Person {
      * @param fatherIDInput Input of the father ID
      * @param motherIDInput Input of the mother ID
      * @param spouseIDInput Input of the spouse ID
-     * @param successInput a boolean input
      */
     public Person(String associatedUsernameInput, String personIDInput, String firstNameInput, String lastNameInput,
-                  String genderInput, String fatherIDInput, String motherIDInput, String spouseIDInput, boolean successInput){
+                  String genderInput, String fatherIDInput, String motherIDInput, String spouseIDInput){
         associatedUsername = associatedUsernameInput;
         personID = personIDInput;
         firstName = firstNameInput;
@@ -76,7 +71,6 @@ public class Person {
         fatherID = fatherIDInput;
         motherID = motherIDInput;
         spouseID = spouseIDInput;
-        success = successInput;
     }
 
     public String getAssociatedUsername() {
@@ -143,13 +137,6 @@ public class Person {
         this.spouseID = spouseID;
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
 
     /**
      * Equals function
@@ -161,7 +148,7 @@ public class Person {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return Objects.equals(associatedUsername, person.associatedUsername) && Objects.equals(personID, person.personID) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.equals(gender, person.gender) && Objects.equals(fatherID, person.fatherID) && Objects.equals(motherID, person.motherID) && Objects.equals(spouseID, person.spouseID) && Objects.equals(success, person.success);
+        return Objects.equals(associatedUsername, person.associatedUsername) && Objects.equals(personID, person.personID) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.equals(gender, person.gender) && Objects.equals(fatherID, person.fatherID) && Objects.equals(motherID, person.motherID) && Objects.equals(spouseID, person.spouseID);
     }
 
 

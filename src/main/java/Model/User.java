@@ -36,6 +36,8 @@ public class User {
      */
     private String gender; // the gender that is associated with a user
 
+    private String personID;
+
     // constructor
 
     /**
@@ -47,13 +49,14 @@ public class User {
      * @param lastNameInput input of the last name
      * @param genderInput input of the gender
      */
-    public User(String usernameInput, String passwordInput, String emailInput, String firstNameInput, String lastNameInput, String genderInput){
+    public User(String usernameInput, String passwordInput, String emailInput, String firstNameInput, String lastNameInput, String genderInput, String personIDInput){
         username = usernameInput;
         password = passwordInput;
         email = emailInput;
         firstName = firstNameInput;
         lastName = lastNameInput;
         gender = genderInput;
+        personID = personIDInput;
     }
 
 
@@ -105,6 +108,14 @@ public class User {
         this.gender = gender;
     }
 
+    public String getPersonID() {
+        return personID;
+    }
+
+    public void setPersonID(String personID) {
+        personID = personID;
+    }
+
     /**
      * Equals function
      * @param o An object input
@@ -115,6 +126,6 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(gender, user.gender);
+        return Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(gender, user.gender) && Objects.equals(personID, user.personID);
     }
 }

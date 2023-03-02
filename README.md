@@ -1,6 +1,6 @@
 # FamilyMapServerStudent
 
-- Refer to the <b>How To Get Started</b> document on the <b>Family Map Server Program Assignment</b> for more detailed instructions and help with common issues. 
+- Refer to the <b>How To Get Started</b> document on the <b>Family Map Server.Server Program Assignment</b> for more detailed instructions and help with common issues. 
 
 General Instructions:
 1.	Follow the instructions on github regarding how to clone this repository into a directory on your local machine.
