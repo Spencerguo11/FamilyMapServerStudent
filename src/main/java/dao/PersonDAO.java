@@ -3,6 +3,8 @@ package dao;
 import Model.Event;
 import Model.Person;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class to handle persons from the database
@@ -81,33 +83,43 @@ public class PersonDAO {
         }
     }
 
+    public void clearByUsername(String username) throws DataAccessException{
+        // clear people by a username;
+        String sql = "DELETE FROM Person WHERE associatedUsername = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while inserting an event into the database");
+        }
+    }
+
+    public List<Person> listAllPeopleByUsername(String username) throws DataAccessException{
+        List<Person> personList = new ArrayList<>();
+        ResultSet rs;
+        String sql = "SELECT * FROM Person WHERE associatedUsername = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            rs = stmt.executeQuery();
+            while(rs.next()) {
+                if (rs.next()) {
+                    Person person = new Person (rs.getString("AssociatedUsername"), rs.getString("PersonID"),
+                            rs.getString("FirstName"), rs.getString("LastName"), rs.getString("Gender"),
+                            rs.getString("FatherID"), rs.getString("MotherID"), rs.getString("SpouseID"));
+
+                    personList.add(person);
+                }
+            }
+            return personList;
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while inserting an event into the database");
+        }
+    }
 
 
-//
-//    /**
-//     * Create a new person
-//     * @param person
-//     */
-//    public void createPerson(Person person) {}
-////    boolean validate(String username, String password){return true;}
-//
-//    /**
-//     * Find the person object by the personID
-//     * @param personId pass in a person ID
-//     * @return a person object
-//     */
-//    public Person getPersonById(String personId){
-//        // get a person by personId
-//        return null;}
-//
-//
-//    /**
-//     * Clear persons by a usernames
-//     * @param username pass in a username
-//     */
-//    public void clearByUsername(String username){
-//        // clear a person by a username;
-//    }
+
 
 
 }

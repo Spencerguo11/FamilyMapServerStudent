@@ -3,6 +3,7 @@ package dao;
 import Model.Event;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -98,23 +99,45 @@ public class EventDAO {
         }
     }
 
+    /**
+     * Clear events by a username
+     * @param username pass in a username
+     */
+    public void clearByUsername(String username) throws DataAccessException{
+        // clear events by a username;
+        String sql = "DELETE FROM Event WHERE associatedUsername = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while inserting an event into the database");
+        }
+    }
 
-//    /**
-//     * Find the list of events for user
-//     * @param username pass in a username
-//     * @return a list of events
-//     */
-//    public List<Event> findForUser(String username){
-//        // find a list of events by a username
-//        return null;}
-//
-//
-//    /**
-//     * Clear events by a username
-//     * @param username pass in a username
-//     */
-//    public void clearByUsername(String username){
-//        // clear an event by a username;
-//    }
+    public List<Event> listAllEventsByUsername(String username) throws DataAccessException{
+        List<Event> eventList = new ArrayList<>();
+        ResultSet rs;
+        String sql = "SELECT * FROM Event WHERE associatedUsername = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            rs = stmt.executeQuery();
+            while(rs.next()) {
+                if (rs.next()) {
+                    Event event = new Event(rs.getString("EventID"), rs.getString("AssociatedUsername"),
+                            rs.getString("PersonID"), rs.getFloat("Latitude"), rs.getFloat("Longitude"),
+                            rs.getString("Country"), rs.getString("City"), rs.getString("EventType"),
+                            rs.getInt("Year"));
+                    eventList.add(event);
+                }
+            }
+            return eventList;
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while inserting an event into the database");
+        }
+    }
+
+
 
 }

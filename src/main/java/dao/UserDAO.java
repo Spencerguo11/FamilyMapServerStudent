@@ -80,45 +80,41 @@ public class UserDAO {
         }
     }
 
+    public boolean validate(String username, String password) throws DataAccessException{
+        String passwordOutput;
+        ResultSet rs;
+        String sql = "SELECT * FROM User WHERE username = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                passwordOutput = rs.getString("Password");
+            } else{
+                passwordOutput = null;
+            }
+            if (password == passwordOutput){
+                return true;
+            } else{
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while inserting an event into the database");
+        }
 
+    }
 
-//    /**
-//     * Create a new user
-//     * @param user pass in a user object
-//     */
-//    public void createUser(User user) {
-//        // pass in an user object and add the information into database
-//    }
-//
-//    /**
-//     * Check to see if the username and password are valid
-//     * @param username pass in the username
-//     * @param password pass in the password
-//     * @return a boolean result
-//     */
-//    public boolean validate(String username, String password){
-//        // check to see if the username and password are correct
-//        return true;}
-//
-//
-//    // find a User by using the userId
-//
-//    /**
-//     * Find a user by the user ID
-//     * @param userId pass in the user ID
-//     * @return a User object
-//     */
-//    User getUserById(String userId){return null;}
-//
-//
-//
-//    /**
-//     * Clear a user by the user ID
-//     * @param userId pass in a user ID
-//     */
-//    public void clearByUserID(String userId){
-//        // clear a user by user ID
-//    }
+    public void clearByUsername(String username) throws DataAccessException{
+        // clear a user by a username;
+        String sql = "DELETE FROM User WHERE username = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while inserting an event into the database");
+        }
+    }
 
 
 

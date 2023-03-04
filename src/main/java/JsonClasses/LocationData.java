@@ -1,17 +1,17 @@
 package JsonClasses;
 
 public class LocationData {
-    private Location[] locations;
+    private Location[] data;
 
     public LocationData(Location[] locationsInput){
-        locations = locationsInput;
+        data = locationsInput;
     }
 
     public Location[] getLocations() {
-        return locations;
+        return data;
     }
 
     public void setLocations(Location[] locations) {
-        this.locations = locations;
+        this.data = locations;
     }
 }
