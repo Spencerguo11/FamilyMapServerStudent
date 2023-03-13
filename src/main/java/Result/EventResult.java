@@ -1,5 +1,8 @@
 package Result;
 import Model.Event;
+import Model.Person;
+
+import java.util.List;
 
 
 /**
@@ -9,7 +12,7 @@ public class EventResult {
     /**
      * A list of events
      */
-    private Event[] events;
+    private List<Event> events;
     /**
      * message to return
      */
@@ -73,7 +76,7 @@ public class EventResult {
      * @param successInput A boolean input
      */
     //constructor
-    public EventResult(Event[] eventsInput, String messageInput, boolean successInput){
+    public EventResult(List<Event> eventsInput, String messageInput, boolean successInput){
         events = eventsInput;
         message = messageInput;
         success = successInput;
@@ -106,12 +109,31 @@ public class EventResult {
         this.year = year;
     }
 
+    public EventResult() {}
 
-    public Event[] getEvents() {
+    public EventResult(List<Event> eventsInput){events = eventsInput;}
+
+    public EventResult(Event event, boolean successInput){
+        eventID = event.getEventID();
+        associatedUsername = event.getAssociatedUsername();
+        personID = event.getPersonID();
+        latitude = event.getLatitude();
+        longitude = event.getLongitude();
+        country = event.getCountry();
+        city = event.getCity();
+        eventType = getEventType();
+        year = event.getYear();
+        success = successInput;
+    }
+
+
+
+
+    public List<Event> getEvents() {
         return events;
     }
 
-    public void setEvents(Event[] events) {
+    public void setEvents(List<Event> events) {
         this.events = events;
     }
 

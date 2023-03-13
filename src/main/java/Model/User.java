@@ -1,6 +1,10 @@
 package Model;
 
+import Request.LoginRequest;
+import Request.RegisterRequest;
+
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * A class for user
@@ -59,6 +63,28 @@ public class User {
         personID = personIDInput;
     }
 
+    public User(String usernameInput, String passwordInput){
+        username = usernameInput;
+        password = passwordInput;
+    }
+
+    public User(){}
+
+    public User(RegisterRequest request) {
+        this.username = request.getUsername();
+        this.password = request.getPassword();
+        this.email = request.getEmail();
+        this.firstName = request.getFirstName();
+        this.lastName = request.getLastName();
+        this.gender = request.getGender();
+        this.personID = UUID.randomUUID().toString();
+    }
+
+    public User(LoginRequest request) {
+        this.username = request.getUsername();
+        this.password = request.getPassword();
+    }
+
 
     public String getUsername() {
         return username;
@@ -113,7 +139,7 @@ public class User {
     }
 
     public void setPersonID(String personID) {
-        personID = personID;
+        this.personID = personID;
     }
 
     /**

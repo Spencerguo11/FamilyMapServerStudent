@@ -3,8 +3,8 @@ package JsonClasses;
 public class LocationData {
     private Location[] data;
 
-    public LocationData(Location[] locationsInput){
-        data = locationsInput;
+    public LocationData(){
+        data = new Location[999];
     }
 
     public Location[] getLocations() {

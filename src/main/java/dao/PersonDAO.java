@@ -1,10 +1,13 @@
 package dao;
 
-import Model.Event;
+import JsonClasses.NameData;
+import JsonClasses.Loader;
 import Model.Person;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * A class to handle persons from the database
@@ -13,13 +16,37 @@ public class PersonDAO {
     /**
      * connect to the database
      */
-    private static Connection conn;// connect to the database
+    private Connection conn;// connect to the database
+    private String[] maleList;
+    private String[] femaleList;
+    private String[] lastNames;
 
-    /**
-     * PersonDAO constructor
-     * @param conn connect to the database
-     */
-    public PersonDAO(Connection conn) {
+    public PersonDAO() {
+
+
+        maleList = new String[145];
+        femaleList = new String[147];
+        lastNames = new String[152];
+
+        NameData femaleNameData = Loader.decodeNames("json/fnames.json");
+        NameData maleNameData = Loader.decodeNames("json/mnames.json");
+        NameData lastNameData = Loader.decodeNames("json/snames.json");
+
+        for (int i = 0; i < maleNameData.getLength(); i++) {
+            maleList[i] = maleNameData.get(i);
+        }
+
+        for (int i = 0; i < femaleNameData.getLength(); i++) {
+            femaleList[i] = femaleNameData.get(i);
+        }
+
+        for (int i = 0; i < lastNameData.getLength(); i++) {
+            lastNames[i] = lastNameData.get(i);
+        }
+
+    }
+
+    public void setConnection(Connection conn) {
         this.conn = conn;
     }
 
@@ -73,13 +100,36 @@ public class PersonDAO {
      * Clear all persons
      */
 
+//    public void clear() throws DataAccessException {
+//        try {
+//            Statement stmt = null;
+//            try {
+//                stmt = conn.createStatement();
+//
+//                stmt.executeUpdate("drop table if exists Person");
+//                stmt.executeUpdate("create table Person (personID VARCHAR(255) NOT NULL PRIMARY KEY, associatedUsername VARCHAR(255) NOT NULL, firstName VARCHAR(255) NOT NULL, lastName VARCHAR(255) NOT NULL, " +
+//                        "gender CHAR(1) NOT NULL, fatherID VARCHAR(255), motherID VARCHAR(255), spouseID VARCHAR(255), CONSTRAINT person_info UNIQUE (personID))");
+//
+//            }
+//
+//            finally {
+//                if (stmt != null) {
+//                    stmt.close();
+//                    stmt = null;
+//                }
+//            }
+//        }
+//        catch (SQLException e) {
+//            throw new DataAccessException("error resetting table");
+//        }
+//    }
     public void clear() throws DataAccessException{
-        String sql = "DELETE FROM Person";
+        String sql = "DELETE FROM Person;";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DataAccessException("Error encountered while clearing the person table");
+            throw new DataAccessException("Error encountered while clearing the user table");
         }
     }
 
@@ -103,13 +153,13 @@ public class PersonDAO {
             stmt.setString(1, username);
             rs = stmt.executeQuery();
             while(rs.next()) {
-                if (rs.next()) {
-                    Person person = new Person (rs.getString("AssociatedUsername"), rs.getString("PersonID"),
-                            rs.getString("FirstName"), rs.getString("LastName"), rs.getString("Gender"),
-                            rs.getString("FatherID"), rs.getString("MotherID"), rs.getString("SpouseID"));
 
-                    personList.add(person);
-                }
+                Person person = new Person (rs.getString("AssociatedUsername"), rs.getString("PersonID"),
+                        rs.getString("FirstName"), rs.getString("LastName"), rs.getString("Gender"),
+                        rs.getString("FatherID"), rs.getString("MotherID"), rs.getString("SpouseID"));
+
+                personList.add(person);
+
             }
             return personList;
         }catch (SQLException e) {
@@ -119,7 +169,117 @@ public class PersonDAO {
     }
 
 
+    public void generateAllGenerations(Person person, int gen, EventDAO eventDAO, int birthYear) throws DataAccessException {
+        //create mom and dad
+        Person mother = makeParent(person, "mom");
+        Person father = makeParent(person, "dad");
+
+        updateSpouseID(father, mother.getPersonID());
+        updateSpouseID(mother, father.getPersonID());
+
+        int parentBirthYear = eventDAO.generateParentEvents(father,mother,birthYear);
+        gen--;
+        if (gen > 0) {
+            generateAllGenerations(mother, gen, eventDAO,parentBirthYear);
+            generateAllGenerations(father,gen,eventDAO,parentBirthYear);
+        }
+
+    }
+
+    public void updateSpouseID(Person person, String spouseID) throws DataAccessException {
+        try {
+            Statement stmt = null;
+            try {
+
+                String sql = "UPDATE Person\n" +
+                        "SET spouseID = '" + spouseID + "' " +
+                        "WHERE personID = '" + person.getPersonID() + "'";
+                stmt = conn.createStatement();
+                stmt.executeUpdate(sql);
+            }
+            finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+        }
+        catch (SQLException e) {
+            throw new DataAccessException("error updating spouse");
+        }
+    }
+
+    private Person makeParent(Person person, String parentType) throws DataAccessException {
+        if (parentType.equals("mom")) {
+            Random rand = new Random();
+            int r = rand.nextInt(146);
+
+            String motherID = UUID.randomUUID().toString();
+            String associatedUsernameOfmother = person.getAssociatedUsername();
+            String motherFirstName = femaleList[r];
+            r = rand.nextInt(149);
+            String motherLastName = lastNames[r];
 
 
+            //Updates person's mother
+            updateParent(person, motherID, "mother");
+            //Make mother model
+            Person mother = new Person();
+            mother.setPersonID(motherID);
+            mother.setAssociatedUsername(associatedUsernameOfmother);
+            mother.setFirstName(motherFirstName);
+            mother.setLastName(motherLastName);
+            mother.setGender("f");
 
+            insert(mother);
+
+            return mother;
+        } else {
+
+            Random rand = new Random();
+            int r = rand.nextInt(146);
+
+            String fatherID = UUID.randomUUID().toString();
+            String associatedUsernameOfFather = person.getAssociatedUsername();
+            String fatherFirstName = maleList[r];
+            r = rand.nextInt(149);
+            String fatherLastName = lastNames[r];
+
+            //Updates person's father
+            updateParent(person, fatherID, "father");
+            //Make father model
+            Person father = new Person();
+            father.setPersonID(fatherID);
+            father.setAssociatedUsername(associatedUsernameOfFather);
+            father.setFirstName(fatherFirstName);
+            father.setLastName(fatherLastName);
+            father.setGender("m");
+
+            insert(father);
+
+            return father;
+
+        }
+    }
+
+    private void updateParent(Person person, String parentID, String parentType) throws DataAccessException {
+        try {
+            Statement stmt = null;
+            try {
+
+                String sql = "UPDATE Person\n" +
+                        "SET " + parentType.toLowerCase() + "ID = '" + parentID + "' " + // modified
+                        "WHERE personID = '" + person.getPersonID() + "'";
+                stmt = conn.createStatement();
+                stmt.executeUpdate(sql);
+            }
+            finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+        }
+        catch (SQLException e) {
+            throw new DataAccessException("error updating parent");
+        }
+    }
 }

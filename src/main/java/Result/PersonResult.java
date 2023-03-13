@@ -1,6 +1,8 @@
 package Result;
 import Model.Person;
 
+import java.util.List;
+
 /**
  * A class to handle person information results
  */
@@ -8,7 +10,7 @@ public class PersonResult {
     /**
      * A list of person objects
      */
-    private Person[] persons;
+    private List<Person> persons;
     /**
      * A message to return
      */
@@ -69,7 +71,7 @@ public class PersonResult {
      * @param successsInput A boolean input
      */
     // constructor
-    public PersonResult(Person[] personsInput, String messageInput, boolean successsInput){
+    public PersonResult(List<Person> personsInput, String messageInput, boolean successsInput){
         persons = personsInput;
         message = messageInput;
         success = successsInput;
@@ -100,8 +102,24 @@ public class PersonResult {
         success = successInput;
     }
 
+    public PersonResult(){}
 
 
+    public PersonResult(List<Person> personsInput){
+        persons = personsInput;
+    }
+
+    public PersonResult(Person person, boolean successInput){
+        associatedUsername = person.getAssociatedUsername();
+        personID = person.getPersonID();
+        firstName = person.getFirstName();
+        lastName = person.getLastName();
+        gender = person.getGender();
+        fatherID = person.getFatherID();
+        motherID = person.getMotherID();
+        spouseID = person.getSpouseID();
+        success = successInput;
+    }
 
 
     public String getAssociatedUsername() {
@@ -169,17 +187,15 @@ public class PersonResult {
     }
 
 
-    public Person[] getPersons() {
+    public List<Person> getPersons() {
         return persons;
     }
 
-    public void setPersons(Person[] persons) {
+    public void setPersons(List<Person> persons) {
         this.persons = persons;
     }
 
-    public String getMessage() {
-        return message;
-    }
+    public String getMessage() {return message;}
 
     public void setMessage(String message) {
         this.message = message;

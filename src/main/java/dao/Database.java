@@ -1,21 +1,32 @@
 package dao;
 
+import Model.Authtoken;
+import Model.Event;
 import Model.Person;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.PrimitiveIterator;
 
 /**
  * A class to handle interacting with the database
  */
 public class Database {
-
-    /**
-     * connect to the database
-     */
     private Connection conn;
+    private UserDAO userDAO;
+    private PersonDAO personDAO;
+    private EventDAO eventDAO;
+    private AuthtokenDAO authtokenDAO;
+
+    public Database(){
+        userDAO = new UserDAO();
+        personDAO = new PersonDAO();
+        eventDAO = new EventDAO();
+        authtokenDAO = new AuthtokenDAO();
+    }
+
 
     /**
      * Open a connection and use the statements to initial transactions.
@@ -28,10 +39,19 @@ public class Database {
         try {
             // The Structure for this Connection is driver:language:path
             // The path assumes you start in the root of your project unless given a full file path
-            final String CONNECTION_URL = "jdbc:sqlite:FamilyServer.sqlite";
+
+//            final String CONNECTION_URL = "jdbc:sqlite:FamilyServer.sqlite"; // original
+            final String CONNECTION_URL = "jdbc:sqlite:familyserver.sqlite";
 
             // Open a database connection to the file given in the path
             conn = DriverManager.getConnection(CONNECTION_URL);
+
+            userDAO.setConnection(conn);
+            personDAO.setConnection(conn);
+            eventDAO.setConnection(conn);
+            authtokenDAO.setConnection(conn);
+
+
             // Start a transaction
             conn.setAutoCommit(false);
         } catch (SQLException e) {
@@ -87,5 +107,21 @@ public class Database {
     }
 
 
+
+    public UserDAO getUserDAO() {
+        return userDAO;
+    }
+
+    public PersonDAO getPersonDAO() {
+        return personDAO;
+    }
+
+    public EventDAO getEventDAO() {
+        return eventDAO;
+    }
+
+    public AuthtokenDAO getAuthtokenDAO() {
+        return authtokenDAO;
+    }
 }
 

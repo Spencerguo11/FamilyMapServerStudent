@@ -1,6 +1,7 @@
 package Model;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * A class for authtoken
@@ -17,16 +18,26 @@ public class Authtoken {
      */
     String username; // the username
 
-    // constructor
+    public String getPersonID() {
+        return personID;
+    }
 
-    /**
-     * Authtoken constructor
-     * @param authtokenInput Input of the authtoken
-     * @param usernameInput Input of the username
-     */
-    public Authtoken(String authtokenInput, String usernameInput){
-        authtoken = authtokenInput;
-        username = usernameInput;
+    public void setPersonID(String personID) {
+        this.personID = personID;
+    }
+
+    String personID;
+
+    public Authtoken(){
+        authtoken = new String();
+        username = new String();
+        personID = new String();
+    }
+
+    public Authtoken(User user){
+        authtoken = UUID.randomUUID().toString();
+        username = user.getUsername();
+        personID = user.getPersonID();
     }
 
     public String getAuthtoken() {

@@ -13,7 +13,34 @@ public class FillResult {
      */
     private boolean success; // a boolean variable to indicator whether successfully filled
 
-    // Constructor
+    private int numPersons;
+    private int numEvents;
+    private int numGenerations;
+
+    public int getNumPersons() {
+        return numPersons;
+    }
+
+    public void setNumPersons(int numPersons) {
+        this.numPersons = numPersons;
+    }
+
+    public int getNumEvents() {
+        return numEvents;
+    }
+
+    public void setNumEvents(int numEvents) {
+        this.numEvents = numEvents;
+    }
+
+    public int getNumGenerations() {
+        return numGenerations;
+    }
+
+    public void setNumGenerations(int numGenerations) {
+        this.numGenerations = numGenerations;
+    }
+// Constructor
 
     /**
      * FillResult constructor
@@ -24,6 +51,10 @@ public class FillResult {
         message = messageInput;
         success = successInput;
     }
+
+
+
+    public FillResult(){}
 
     public String getMessage() {
         return message;

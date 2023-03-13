@@ -25,6 +25,8 @@ public class LoadResult {
         success = successInput;
     }
 
+    public LoadResult(){}
+
     public String getMessage() {
         return message;
     }

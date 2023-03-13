@@ -1,5 +1,7 @@
 package Result;
 
+import Model.Authtoken;
+
 /**
  * A class to handle registering result.
  */
@@ -7,6 +9,9 @@ public class RegisterResult {
     private String authtoken; // an unique string of a register result
     private String username; // the username of the register result
     private String personID; // the personID of the register result
+
+    private String message;
+
     private boolean success; // a boolean variable to indicator whether successfully registered
 
     // constructor
@@ -24,7 +29,14 @@ public class RegisterResult {
         username = usernameInput;
         personID = personIDInput;
         success = successInput;
+    }
 
+    public RegisterResult(){}
+
+    public RegisterResult(Authtoken authtokenObj) {
+        this.authtoken = authtokenObj.getAuthtoken();
+        this.username = authtokenObj.getUsername();
+        this.personID = authtokenObj.getPersonID();
     }
 
     public String getAuthtoken() {
@@ -58,4 +70,9 @@ public class RegisterResult {
     public void setSuccess(boolean success) {
         this.success = success;
     }
+
+    public String getMessage() {return message;}
+
+    public void setMessage(String message) {this.message = message;}
+
 }

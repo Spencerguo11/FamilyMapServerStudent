@@ -12,15 +12,12 @@ public class UserDAO {
     /**
      * connect to the database
      */
-    private final Connection conn; // connect to the database
+    private Connection conn; // connect to the database
 
-    /**
-     * UserDAO constructor
-     * @param conn connect to the database
-     */
-    public UserDAO(Connection conn) {
-        this.conn = conn;
-    }
+
+    public UserDAO() {}
+
+    public void setConnection(Connection conn){this.conn = conn;}
 
 
     public void insert(User user) throws DataAccessException {
@@ -70,8 +67,24 @@ public class UserDAO {
     /**
      * Clear all users
      */
+//    public void clear() throws DataAccessException {
+//        ResultSet rs;
+//
+//        try {
+//            Statement stmt = conn.createStatement();
+//            String sql = "DELETE FROM User;";
+//            stmt.executeUpdate(sql);
+//            stmt.close();
+////                stmt.executeUpdate("drop table if exists User");
+////                stmt.executeUpdate("create table User (username VARCHAR(255) NOT NULL PRIMARY KEY, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, firstName VARCHAR(255) NOT NULL, " +
+////                        "lastName VARCHAR(255) NOT NULL, gender VARCHAR(10) NOT NULL, personID VARCHAR(255) NOT NULL)");
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
     public void clear() throws DataAccessException{
-        String sql = "DELETE FROM User";
+        String sql = "DELETE FROM User;";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -83,19 +96,14 @@ public class UserDAO {
     public boolean validate(String username, String password) throws DataAccessException{
         String passwordOutput;
         ResultSet rs;
-        String sql = "SELECT * FROM User WHERE username = ?;";
+        String sql = "SELECT * FROM User WHERE username = '" + username + "' AND password = '" + password + "'";
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, username);
             rs = stmt.executeQuery();
-            if (rs.next()) {
-                passwordOutput = rs.getString("Password");
+            if (!rs.next()) {
+                throw new DataAccessException("error finding username/password");
             } else{
-                passwordOutput = null;
-            }
-            if (password == passwordOutput){
                 return true;
-            } else{
-                return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();

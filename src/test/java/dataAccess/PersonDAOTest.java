@@ -29,7 +29,7 @@ public class PersonDAOTest {
 
         Connection conn = db.getConnection();
 
-        pDao = new PersonDAO(conn);
+        pDao = new PersonDAO();
 
         pDao.clear();
     }

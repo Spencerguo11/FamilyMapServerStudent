@@ -1,5 +1,7 @@
 package Model;
 
+import Request.RegisterRequest;
+
 import java.util.Objects;
 
 /**
@@ -71,6 +73,19 @@ public class Person {
         fatherID = fatherIDInput;
         motherID = motherIDInput;
         spouseID = spouseIDInput;
+    }
+
+    public Person(){}
+
+    public Person(User user) {
+        this.associatedUsername = user.getUsername();
+        this.personID = user.getPersonID();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.gender = user.getGender();
+        this.fatherID = new String();
+        this.motherID = new String();
+        this.spouseID = new String();
     }
 
     public String getAssociatedUsername() {

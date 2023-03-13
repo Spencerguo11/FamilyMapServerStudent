@@ -20,10 +20,13 @@ public class ClearResult {
      * @param messageInput Input of message
      * @param successInput a boolean input
      */
+
     public ClearResult(String messageInput, boolean successInput){
         message = messageInput;
         success = successInput;
     }
+
+    public ClearResult(){}
 
 
     public String getMessage() {

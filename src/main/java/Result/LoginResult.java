@@ -1,5 +1,7 @@
 package Result;
 
+import Model.Authtoken;
+
 /**
  * A class to handle logging a user in result.
  */
@@ -21,6 +23,8 @@ public class LoginResult {
      */
     private boolean success; // a boolean variable to indicator whether successfully logged a user in
 
+
+    private String message;
     // constructor
 
     /**
@@ -38,6 +42,14 @@ public class LoginResult {
         success = success;
     }
 
+    public LoginResult() {};
+
+    public LoginResult(Authtoken authtoken, String personIDInput) {
+        this.authtoken = authtoken.getAuthtoken();
+        this.username = authtoken.getUsername();
+        this.personID = personIDInput;
+
+    };
     public String getAuthtoken() {
         return authtoken;
     }
@@ -68,5 +80,13 @@ public class LoginResult {
 
     public void setSuccess(boolean success) {
         this.success = success;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
