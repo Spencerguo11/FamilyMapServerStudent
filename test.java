@@ -2,7 +2,6 @@ package service;
 
 import dataaccess.*;
 import model.*;
-import result.EventResult;
 
 public class EventService {
 
