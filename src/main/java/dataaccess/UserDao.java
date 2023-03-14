@@ -24,7 +24,7 @@ public class UserDao {
         try {
             PreparedStatement stmt = null;
             try {
-                String sql = "insert into users (username, password, email, firstName, lastName, gender, personId) values (?,?,?,?,?,?,?)";
+                String sql = "insert into User (username, password, email, firstName, lastName, gender, personId) values (?,?,?,?,?,?,?)";
                 stmt = conn.prepareStatement(sql);
                 stmt.setString(1, user.getUsername());
                 stmt.setString(2, user.getPassword());
@@ -59,7 +59,7 @@ public class UserDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from users WHERE username = '" + username + "'";
+                String sql = "select * from User WHERE username = '" + username + "'";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
@@ -95,8 +95,8 @@ public class UserDao {
             try {
                 stmt = conn.createStatement();
 
-                stmt.executeUpdate("drop table if exists users");
-                stmt.executeUpdate("create table users (username VARCHAR(50) NOT NULL PRIMARY KEY, password VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, firstName VARCHAR(50) NOT NULL, " +
+                stmt.executeUpdate("drop table if exists User");
+                stmt.executeUpdate("create table User (username VARCHAR(50) NOT NULL PRIMARY KEY, password VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, firstName VARCHAR(50) NOT NULL, " +
                         "lastName VARCHAR(50) NOT NULL, gender CHAR(1) NOT NULL, personId VARCHAR(50) NOT NULL, CONSTRAINT user_info UNIQUE (username))");
             }
             finally {
@@ -117,7 +117,7 @@ public class UserDao {
          ResultSet rs = null;
          try {
              String username = user.getUsername();
-             String sql = "select * from users WHERE username = '" + user.getUsername() + "' AND password = '" + user.getPassword() + "'";
+             String sql = "select * from User WHERE username = '" + user.getUsername() + "' AND password = '" + user.getPassword() + "'";
              stmt = conn.prepareStatement(sql);
              rs =  stmt.executeQuery();
 
@@ -146,7 +146,7 @@ public class UserDao {
              PreparedStatement stmt = null;
              ResultSet rs = null;
              try {
-                 String sql = "select * from users WHERE username = '" + username +"'";
+                 String sql = "select * from User WHERE username = '" + username +"'";
                  stmt = conn.prepareStatement(sql);
 
                  rs = stmt.executeQuery();
@@ -181,7 +181,7 @@ public class UserDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from users WHERE username = '" + user.getUsername() + "' AND password = '" + user.getPassword() + "'";
+                String sql = "select * from User WHERE username = '" + user.getUsername() + "' AND password = '" + user.getPassword() + "'";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
@@ -212,7 +212,7 @@ public class UserDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from users";
+                String sql = "select * from User";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
@@ -248,7 +248,7 @@ public class UserDao {
             try {
                 stmt = conn.createStatement();
 
-                stmt.executeUpdate("DELETE FROM users WHERE username = '" + user.getUsername() + "'");
+                stmt.executeUpdate("DELETE FROM User WHERE username = '" + user.getUsername() + "'");
 
             }
             finally {

@@ -53,7 +53,7 @@ public class PersonDao {
             PreparedStatement stmt = null;
             try {
 
-                String sql = "insert into people (personID, descendant, firstName, lastName, gender, father, mother, spouse) values (?,?,?,?,?,?,?,?)";
+                String sql = "insert into Person (personID, associatedUsername, firstName, lastName, gender, fatherID, motherID, spouseID) values (?,?,?,?,?,?,?,?)";
                 stmt = conn.prepareStatement(sql);
 
                 stmt.setString(1,person.getPersonID());
@@ -95,7 +95,7 @@ public class PersonDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from people WHERE personID = '" + personID + "'";
+                String sql = "select * from Person WHERE personID = '" + personID + "'";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
@@ -144,8 +144,8 @@ public class PersonDao {
             Statement stmt = null;
             try {
 
-                String sql = "UPDATE people\n" +
-                        "SET mother = '" + motherID + "' " +
+                String sql = "UPDATE Person\n" +
+                        "SET motherID = '" + motherID + "' " +
                         "WHERE personID = '" + p.getPersonID() + "'";
                 stmt = conn.createStatement();
                 stmt.executeUpdate(sql);
@@ -166,8 +166,8 @@ public class PersonDao {
             Statement stmt = null;
             try {
 
-                String sql = "UPDATE people\n" +
-                        "SET father = '" + fatherID + "' " +
+                String sql = "UPDATE Person\n" +
+                        "SET fatherID = '" + fatherID + "' " +
                         "WHERE personID = '" + p.getPersonID() + "'";
                 stmt = conn.createStatement();
                 stmt.executeUpdate(sql);
@@ -188,8 +188,8 @@ public class PersonDao {
             Statement stmt = null;
             try {
 
-                String sql = "UPDATE people\n" +
-                        "SET spouse = '" + spouseID + "' " +
+                String sql = "UPDATE Person\n" +
+                        "SET spouseID = '" + spouseID + "' " +
                         "WHERE personID = '" + person.getPersonID() + "'";
                 stmt = conn.createStatement();
                 stmt.executeUpdate(sql);
@@ -269,7 +269,7 @@ public class PersonDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from people WHERE descendant = '" + username + "'";
+                String sql = "select * from Person WHERE associatedUsername = '" + username + "'";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
@@ -297,7 +297,7 @@ public class PersonDao {
             }
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error selecting all people");
+            throw new Database.DatabaseException("error selecting all Person");
         }
         Person[] personFinal = new Person[personList.size()];
         personFinal = personList.toArray(personFinal);
@@ -311,7 +311,7 @@ public class PersonDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from people WHERE personID = '" + personID +"'";
+                String sql = "select * from Person WHERE personID = '" + personID +"'";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
@@ -352,9 +352,9 @@ public class PersonDao {
             try {
                 stmt = conn.createStatement();
 
-                stmt.executeUpdate("drop table if exists people");
-                stmt.executeUpdate("create table people (personID VARCHAR(50) NOT NULL PRIMARY KEY, descendant VARCHAR(50) NOT NULL, firstName VARCHAR(50) NOT NULL, lastName VARCHAR(50) NOT NULL, " +
-                        "gender CHAR(1) NOT NULL, father VARCHAR(50), mother VARCHAR(50), spouse VARCHAR(50), CONSTRAINT person_info UNIQUE (personID))");
+                stmt.executeUpdate("drop table if exists Person");
+                stmt.executeUpdate("create table Person (personID VARCHAR(50) NOT NULL PRIMARY KEY, associatedUsername VARCHAR(50) NOT NULL, firstName VARCHAR(50) NOT NULL, lastName VARCHAR(50) NOT NULL, " +
+                        "gender CHAR(1) NOT NULL, fatherID VARCHAR(50), motherID VARCHAR(50), spouseID VARCHAR(50), CONSTRAINT person_info UNIQUE (personID))");
 
             }
 
@@ -376,7 +376,7 @@ public class PersonDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from people";
+                String sql = "select * from Person";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
@@ -414,7 +414,7 @@ public class PersonDao {
             try {
                 stmt = conn.createStatement();
 
-                stmt.executeUpdate("DELETE FROM people WHERE descendant = '" + user.getUsername() + "'");
+                stmt.executeUpdate("DELETE FROM Person WHERE associatedUsername = '" + user.getUsername() + "'");
 
             }
             finally {
@@ -425,7 +425,7 @@ public class PersonDao {
             }
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error deleting all people of user");
+            throw new Database.DatabaseException("error deleting all Person of user");
         }
     }
 

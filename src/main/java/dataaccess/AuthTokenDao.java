@@ -25,7 +25,7 @@ public class AuthTokenDao {
         try{
             PreparedStatement stmt = null;
             try {
-                String sql = "insert into authTable (auth_Token, userName) values (?,?)";
+                String sql = "insert into Authtoken (authtoken, userName) values (?,?)";
                 stmt = conn.prepareStatement(sql);
 
                 stmt.setString(1, authtoken.getAuthtoken());
@@ -56,7 +56,7 @@ public class AuthTokenDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from authTable WHERE auth_Token = '" + authtoken + "'";
+                String sql = "select * from Authtoken WHERE authtoken = '" + authtoken + "'";
                 stmt = conn.prepareStatement(sql);
                 rs = stmt.executeQuery();
 
@@ -90,10 +90,10 @@ public class AuthTokenDao {
             try {
                 stmt = conn.createStatement();
 
-                stmt.executeUpdate("drop table if exists authTable");
-                stmt.executeUpdate("create table authTable (auth_Token VARCHAR(50) NOT NULL PRIMARY KEY,\n" +
+                stmt.executeUpdate("drop table if exists Authtoken");
+                stmt.executeUpdate("create table Authtoken (authtoken VARCHAR(50) NOT NULL PRIMARY KEY,\n" +
                         "\tuserName VARCHAR(50) NOT NULL,\n" +
-                        "        CONSTRAINT auth_info UNIQUE (auth_Token))");
+                        "        CONSTRAINT auth_info UNIQUE (authtoken))");
             }
             finally {
                 if (stmt != null) {
@@ -113,7 +113,7 @@ public class AuthTokenDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from authTable WHERE auth_Token = '" + authtoken +"'";
+                String sql = "select * from Authtoken WHERE authtoken = '" + authtoken +"'";
                 stmt = conn.prepareStatement(sql);
                 rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -142,7 +142,7 @@ public class AuthTokenDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from authTable";
+                String sql = "select * from Authtoken";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();

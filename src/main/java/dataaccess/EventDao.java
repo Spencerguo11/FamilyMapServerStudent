@@ -30,7 +30,7 @@ public class EventDao {
         try {
             PreparedStatement stmt = null;
             try {
-                String sql = "insert into events (eventID, descendant, peronID, latitude, longitude, country, city, eventType, eventYear) values (?,?,?,?,?,?,?,?,?)";
+                String sql = "insert into Event (eventID, associatedUsername, peronID, latitude, longitude, country, city, eventType, year) values (?,?,?,?,?,?,?,?,?)";
                 stmt = conn.prepareStatement(sql);
                 stmt.setString(1, event.getEventID());
                 stmt.setString(2, event.getAssociatedUsername());
@@ -66,7 +66,7 @@ public class EventDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from events WHERE eventID = '" + eventID + "'";;
+                String sql = "select * from Event WHERE eventID = '" + eventID + "'";;
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
@@ -101,9 +101,9 @@ public class EventDao {
             try {
                 stmt = conn.createStatement();
 
-                stmt.executeUpdate("drop table if exists events");
-                stmt.executeUpdate("create table events (eventID VARCHAR(50) NOT NULL PRIMARY KEY, descendant VARCHAR(50) NOT NULL, peronID VARCHAR(50) NOT NULL, latitude REAL NOT NULL, " +
-                        "longitude REAL NOT NULL, country VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, eventType VARCHAR(50) NOT NULL, eventYear INT NOT NULL, CONSTRAINT event_info UNIQUE (eventID))");
+                stmt.executeUpdate("drop table if exists Event");
+                stmt.executeUpdate("create table Event (eventID VARCHAR(50) NOT NULL PRIMARY KEY, associatedUsername VARCHAR(50) NOT NULL, peronID VARCHAR(50) NOT NULL, latitude REAL NOT NULL, " +
+                        "longitude REAL NOT NULL, country VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, eventType VARCHAR(50) NOT NULL, year INT NOT NULL, CONSTRAINT event_info UNIQUE (eventID))");
             }
             finally {
                 if (stmt != null) {
@@ -123,7 +123,7 @@ public class EventDao {
             try {
                 stmt = conn.createStatement();
 
-                stmt.executeUpdate("DELETE FROM events WHERE descendant = '" + user.getUsername() + "'");
+                stmt.executeUpdate("DELETE FROM Event WHERE associatedUsername = '" + user.getUsername() + "'");
             }
             finally {
                 if (stmt != null) {
@@ -143,7 +143,7 @@ public class EventDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from events WHERE eventID = '" + eventID +"'";
+                String sql = "select * from Event WHERE eventID = '" + eventID +"'";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
@@ -180,7 +180,7 @@ public class EventDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from events WHERE descendant = '" + username + "'";
+                String sql = "select * from Event WHERE associatedUsername = '" + username + "'";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
@@ -421,7 +421,7 @@ public class EventDao {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                String sql = "select * from events";
+                String sql = "select * from Event";
                 stmt = conn.prepareStatement(sql);
 
                 rs = stmt.executeQuery();
