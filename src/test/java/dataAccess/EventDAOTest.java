@@ -37,7 +37,7 @@ public class EventDAOTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws DataAccessException {
         // Here we close the connection to the database file, so it can be opened again later.
         // We will set commit to false because we do not want to save the changes to the database
         // between test cases.
@@ -49,7 +49,7 @@ public class EventDAOTest {
         // Start by inserting an event into the database.
         eDao.insert(bestEvent);
         // Let's use a find method to get the event that we just put in back out.
-        Event compareTest = eDao.find(bestEvent.getEventID());
+        boolean compareTest = eDao.find(bestEvent.getEventID());
         // First lets see if our find method found anything at all. If it did then we know that we got
         // something back from our database.
         assertNotNull(compareTest);

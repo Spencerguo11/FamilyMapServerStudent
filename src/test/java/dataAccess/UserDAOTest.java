@@ -33,7 +33,7 @@ public class UserDAOTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws DataAccessException {
 
         db.closeConnection(false);
     }
@@ -43,7 +43,7 @@ public class UserDAOTest {
 
         uDao.insert(bestUser);
 
-        User compareTest = uDao.find(bestUser.getUsername());
+        boolean compareTest = uDao.find(bestUser.getUsername());
 
         assertNotNull(compareTest);
 
@@ -64,7 +64,7 @@ public class UserDAOTest {
 
         uDao.insert(bestUser);
 
-        User compareTest = uDao.find(bestUser.getUsername());
+        boolean compareTest = uDao.find(bestUser.getUsername());
 
         assertNotNull(compareTest);
 
@@ -73,7 +73,7 @@ public class UserDAOTest {
 
     @Test
     public void findFail() throws DataAccessException {
-        User person = uDao.find(null);
+        boolean person = uDao.find(null);
         assertNull(person);
     }
 
@@ -91,13 +91,13 @@ public class UserDAOTest {
         uDao.insert(person2);
         uDao.insert(person3);
 
-        User compareTest = uDao.find(person1.getUsername());
+        boolean compareTest = uDao.find(person1.getUsername());
         assertNotNull(compareTest);
         assertEquals(person1, compareTest);
 
         uDao.clear();
 
-        User failedPerson = uDao.find(person1.getUsername());
+        boolean failedPerson = uDao.find(person1.getUsername());
         assertNull(failedPerson);
 
     }

@@ -36,7 +36,7 @@ public class RegisterResult {
     public RegisterResult(Authtoken authtokenObj) {
         this.authtoken = authtokenObj.getAuthtoken();
         this.username = authtokenObj.getUsername();
-        this.personID = authtokenObj.getPersonID();
+//        this.personID = authtokenObj.getPersonID();
     }
 
     public String getAuthtoken() {

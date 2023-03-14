@@ -35,13 +35,13 @@ public class LoginService {
             db.openConnection();
             UserDAO userDAO = db.getUserDAO();
             AuthtokenDAO authtokenDAO = db.getAuthtokenDAO();
+            User user = new User(request);
             //check if db
-            if (userDAO.validate(request.getUsername(), request.getPassword())) {
-                User user = new User(request);
+            if (userDAO.ExistingUsernamePassword(user)) {
                 Authtoken authtoken = new Authtoken(user);
                 // need to figure out how to add personID
-                String personID = userDAO.find(request.getUsername()).getPersonID();
-                authtoken.setPersonID(personID);
+                String personID = userDAO.getPersonIDOfUser(user);
+//                authtoken.setPersonID(personID);
                 authtokenDAO.insert(authtoken);
                 loginResult = new LoginResult(authtoken, personID);
                 loginResult.setSuccess(true);
@@ -51,12 +51,14 @@ public class LoginService {
         } catch (DataAccessException dataAccessException) {
             loginResult.setMessage(dataAccessException.getMessage());
             loginResult.setSuccess(false);
+
             // close db
             try {
                 db.closeConnection(true);
             } catch (Exception e) {
                 loginResult.setMessage(e.getMessage());
                 loginResult.setSuccess(false);
+                db.closeConnection(false);
             }
         }
         return loginResult;

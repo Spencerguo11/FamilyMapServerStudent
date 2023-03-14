@@ -39,7 +39,7 @@ public class LoginResult {
         authtoken = authtokenInput;
         username = usernameInput;
         personID = personIDInput;
-        success = success;
+        this.success = success;
     }
 
     public LoginResult() {};

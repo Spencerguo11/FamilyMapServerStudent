@@ -43,6 +43,7 @@ public class RegisterHandler extends Handler {
                     writeString(gson.toJson(result), resBody);
                     resBody.close();
                 } else {
+                    myRegisterResult.setMessage("error: bad request.");
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
                     String jsonStr = new String("{\"message\" : \"" + myRegisterResult.getMessage() + "\"}");
                     OutputStream respBody = exchange.getResponseBody();

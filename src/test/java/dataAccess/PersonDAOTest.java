@@ -35,7 +35,7 @@ public class PersonDAOTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws DataAccessException {
 
         db.closeConnection(false);
     }
@@ -45,7 +45,7 @@ public class PersonDAOTest {
 
         pDao.insert(bestPerson);
 
-        Person compareTest = pDao.find(bestPerson.getPersonID());
+        boolean compareTest = pDao.find(bestPerson.getPersonID());
 
         assertNotNull(compareTest);
 
@@ -66,7 +66,7 @@ public class PersonDAOTest {
 
         pDao.insert(bestPerson);
 
-        Person compareTest = pDao.find(bestPerson.getPersonID());
+        boolean compareTest = pDao.find(bestPerson.getPersonID());
 
         assertNotNull(compareTest);
 
@@ -75,7 +75,7 @@ public class PersonDAOTest {
 
     @Test
     public void findFail() throws DataAccessException {
-        Person person = pDao.find(null);
+        boolean person = pDao.find(null);
         assertNull(person);
     }
 
@@ -93,13 +93,13 @@ public class PersonDAOTest {
         pDao.insert(person2);
         pDao.insert(person3);
 
-        Person compareTest = pDao.find(person1.getPersonID());
+        boolean compareTest = pDao.find(person1.getPersonID());
         assertNotNull(compareTest);
         assertEquals(person1, compareTest);
 
         pDao.clear();
 
-        Person failedPerson = pDao.find(person1.getPersonID());
+        boolean failedPerson = pDao.find(person1.getPersonID());
         assertNull(failedPerson);
 
     }

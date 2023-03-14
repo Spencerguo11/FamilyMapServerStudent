@@ -18,26 +18,26 @@ public class Authtoken {
      */
     String username; // the username
 
-    public String getPersonID() {
-        return personID;
-    }
-
-    public void setPersonID(String personID) {
-        this.personID = personID;
-    }
-
-    String personID;
+//    public String getPersonID() {
+//        return personID;
+//    }
+//
+//    public void setPersonID(String personID) {
+//        this.personID = personID;
+//    }
+//
+//    String personID;
 
     public Authtoken(){
         authtoken = new String();
         username = new String();
-        personID = new String();
+
     }
 
     public Authtoken(User user){
         authtoken = UUID.randomUUID().toString();
         username = user.getUsername();
-        personID = user.getPersonID();
+//        personID = user.getPersonID();
     }
 
     public String getAuthtoken() {

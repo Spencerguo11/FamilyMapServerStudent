@@ -1,53 +1,110 @@
+//package Service;
+//
+//import Result.ClearResult;
+//import Result.LoginResult;
+//import dao.*;
+//
+//import java.sql.Connection;
+//
+///** A service to handle clearing the database
+// *
+// */
+//public class ClearService {
+//    private Database db ;
+//
+//
+//    public ClearService() {db = new Database();}
+//
+//    /**
+//     * Clear all data
+//     * @return a Clear Result
+//     */
+//    public ClearResult clear() throws DataAccessException {
+////        Connection conn = db.getConnection();
+////        db.openConnection();
+//        ClearResult result = new ClearResult();
+//
+//        try{
+//            db.openConnection();
+//            db.getUserDAO().clear();
+//            db.getAuthtokenDAO().clear();
+//            db.getPersonDAO().clear();
+//            db.getEventDAO().clear();
+//            result.setMessage("clear succeeded");
+//            result.setSuccess(true);
+//
+//        } catch (DataAccessException dataAccessException){
+//            result.setMessage(dataAccessException.getMessage());
+//            dataAccessException.printStackTrace();
+//            result.setSuccess(false);
+//            result.setMessage("failed");
+//            db.closeConnection(false);
+//
+////            try {
+////                db.closeConnection(false);
+////            } catch (Exception e) {
+////                db.closeConnection(false);
+////                result.setMessage(e.getMessage());
+////                return result;
+////            }
+//        }finally{
+//            if(result.isSuccess()){
+//                db.closeConnection(true);
+//            }else{
+//                db.closeConnection(false);
+//            }
+//            return result;
+//        }
+//
+//
+//    }
+//
+//
+//}
+
 package Service;
 
+
 import Result.ClearResult;
-import Result.LoginResult;
-import dao.*;
+import dao.DataAccessException;
+import dao.Database;
 
-import java.sql.Connection;
-
-/** A service to handle clearing the database
- *
- */
 public class ClearService {
-    private Database db ;
-
-
-    public ClearService() {db = new Database();}
 
     /**
-     * Clear all data
-     * @return a Clear Result
+     * Deletes all data from database
+     * @return cleared database with message
      */
-    public ClearResult clear() throws DataAccessException {
-        Connection conn = db.getConnection();
-        db.openConnection();
-        ClearResult result = new ClearResult();
 
-        try{
+    private Database db;
+
+    public ClearService() {
+        db = new Database();
+    }
+
+    public ClearResult clear() {
+        ClearResult clearResult = new ClearResult();
+        try {
             db.openConnection();
-            db.getUserDAO().clear();
-            db.getAuthtokenDAO().clear();
-            db.getPersonDAO().clear();
-            db.getEventDAO().clear();
+            db.clearTables();
+
             db.closeConnection(true);
 
-        } catch (DataAccessException dataAccessException){
-            result.setMessage(dataAccessException.getMessage());
-            dataAccessException.printStackTrace();
+
+        } catch ( DataAccessException e) {
+            e.printStackTrace();
+            clearResult.setMessage(e.getMessage());
 
             try {
                 db.closeConnection(false);
-            } catch (Exception e) {
-                result.setMessage(e.getMessage());
-                return result;
+            } catch (DataAccessException d) {
+                clearResult.setMessage(d.getMessage());
+                return clearResult;
             }
-            return result;
+            return clearResult;
         }
-        result.setMessage("clear succeeded");
-        result.setSuccess(true);
-        return result;
+        clearResult.setMessage("clear succeeded");
+        return clearResult;
+
     }
-
-
 }

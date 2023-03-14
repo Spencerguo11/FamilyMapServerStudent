@@ -24,8 +24,7 @@ public class LoadService {
      * @return a Load Result
      */
     public LoadResult load(LoadRequest request) throws DataAccessException {
-        db = new Database();
-        Connection conn = db.getConnection();
+//        db = new Database();
         LoadResult loadResult = new LoadResult();
 
         try{
@@ -64,6 +63,7 @@ public class LoadService {
         } catch (DataAccessException dataAccessException){
             loadResult.setMessage(dataAccessException.getMessage());
             loadResult.setSuccess(false);
+            db.closeConnection(false);
         }
 
 

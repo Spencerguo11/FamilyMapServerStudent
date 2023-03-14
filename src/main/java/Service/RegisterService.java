@@ -28,7 +28,7 @@ public class RegisterService {
      * @return a Register Result
      */
     public RegisterResult register(RegisterRequest request)throws DataAccessException {
-        Connection conn = db.getConnection();
+//        Connection conn = db.getConnection();
 
         RegisterResult registerResult = new RegisterResult();
 
@@ -39,7 +39,6 @@ public class RegisterService {
             PersonDAO personDAO = db.getPersonDAO();
             EventDAO eventDAO = db.getEventDAO();
 
-            if (userDAO.find(request.getUsername()) == null) {
 
                 User user = new User(request);
 
@@ -50,21 +49,24 @@ public class RegisterService {
                 personDAO.insert(person);
 
 
-                int birthYear = eventDAO.generateBaseEvent(person);
+                int birthYear = eventDAO.generateRootEvent(person);
                 // generate 4 gens
-                personDAO.generateAllGenerations(person, 4, eventDAO, birthYear);
+                personDAO.generateGenerations(person, 4, eventDAO, birthYear);
 
                 Authtoken authtoken_obj = new Authtoken(user);
                 authtokenDAO.insert(authtoken_obj);
                 registerResult = new RegisterResult(authtoken_obj);
+                String username = authtoken_obj.getUsername();
+                String personID = userDAO.getPersonIDOfUser(user);
+                registerResult.setPersonID(personID);
                 registerResult.setSuccess(true);
 
 
-            }
             db.closeConnection(true);
         } catch (DataAccessException dataAccessException){
             registerResult.setMessage(dataAccessException.getMessage());
             registerResult.setSuccess(false);
+            db.closeConnection(false);
         }
 
 //        db.closeConnection(true);
