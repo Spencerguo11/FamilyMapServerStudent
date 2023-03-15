@@ -23,16 +23,16 @@ public class EventIDService {
         try{
             db.openConnection();
 
-            EventDao eDao = db.geteDao();
-            AuthTokenDao aDao = db.getaDao();
+            EventDao eventDao = db.geteventDao();
+            AuthTokenDao authTokenDao = db.getauthTokenDao();
 
 
-            if(aDao.validAuthToken(authtoken)){
-                AuthToken auth = aDao.getAuthToken(authtoken);
-                if (eDao.find(eventID)){
-                    Event event = eDao.selectSingleEvent(eventID);
+            if(authTokenDao.validAuthToken(authtoken)){
+                AuthToken auth = authTokenDao.getAuthToken(authtoken);
+                if (eventDao.find(eventID)){
+                    Event event = eventDao.selectSingleEvent(eventID);
                     if (!event.getAssociatedUsername().equals(auth.getUsername())){
-                        throw new Database.DatabaseException("error finding username");
+                        throw new DataAccessException("error finding username");
                     }
 
                     result = new EventIDResult(event);
@@ -42,12 +42,12 @@ public class EventIDService {
             db.closeConnection(true);
             result.setSuccess(true);
 
-        } catch (Database.DatabaseException e){
+        } catch (DataAccessException e){
             result.setSuccess(false);
             result.setMessage(e.getMessage());
             try{
                 db.closeConnection(false);
-            }catch (Database.DatabaseException d){
+            }catch (DataAccessException d){
                 result.setSuccess(false);
                 result.setMessage(d.getMessage());
             }

@@ -11,7 +11,7 @@ import service.UserRegisterService;
 import java.io.*;
 import java.net.HttpURLConnection;
 
-public class RegisterHandler implements HttpHandler {
+public class RegisterHandler extends RootHandler  {
 
     public RegisterHandler(){}
 
@@ -57,10 +57,5 @@ public class RegisterHandler implements HttpHandler {
         }
     }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
 }
 

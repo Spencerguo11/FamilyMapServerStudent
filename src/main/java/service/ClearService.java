@@ -18,18 +18,18 @@ public class ClearService {
         ClearResult clearResult = new ClearResult();
         try {
             db.openConnection();
-            db.clearTables();
+            db.clearAll();
 
             db.closeConnection(true);
 
 
-        } catch (Database.DatabaseException e) {
+        } catch (DataAccessException e) {
             e.printStackTrace();
             clearResult.setMessage(e.getMessage());
 
             try {
                 db.closeConnection(false);
-            } catch (Database.DatabaseException d) {
+            } catch (DataAccessException d) {
                 clearResult.setMessage(d.getMessage());
                 return clearResult;
             }

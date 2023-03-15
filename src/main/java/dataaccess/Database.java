@@ -8,44 +8,20 @@ import java.sql.SQLException;
 
 public class Database {
 
-    public static class DatabaseException extends Exception {
-        private String message;
-
-        public DatabaseException(){
-            message = new String();
-        }
-        public DatabaseException(String message){
-            this.message = message;
-        }
-        public String getMessage(){
-            return message;
-        }
-    }
-
     private Connection conn;
-    private UserDao uDao;
-    private PersonDao pDao;
-    private EventDao eDao;
-    private AuthTokenDao aDao;
-
-    static {
-        try {
-            final String driver = "org.sqlite.JDBC";
-            Class.forName(driver);
-        }
-        catch(ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
+    private UserDao userDao;
+    private PersonDao personDao;
+    private EventDao eventDao;
+    private AuthTokenDao authTokenDao;
+    
     public Database() {
-        uDao = new UserDao();
-        pDao = new PersonDao();
-        eDao = new EventDao();
-        aDao = new AuthTokenDao();
+        userDao = new UserDao();
+        personDao = new PersonDao();
+        eventDao = new EventDao();
+        authTokenDao = new AuthTokenDao();
     }
 
-    public Connection openConnection() throws DatabaseException {
+    public Connection openConnection() throws DataAccessException {
         try {
 
             final String CONNECTION_URL = "jdbc:sqlite:server.db";
@@ -53,30 +29,23 @@ public class Database {
             // Open a database connection to the file given in the path
             conn = DriverManager.getConnection(CONNECTION_URL);
 
-            uDao.setConnection(conn);
-            pDao.setConnection(conn);
-            eDao.setConnection(conn);
-            aDao.setConnection(conn);
+            userDao.setConnection(conn);
+            personDao.setConnection(conn);
+            eventDao.setConnection(conn);
+            authTokenDao.setConnection(conn);
 
 
             // Start a transaction
             conn.setAutoCommit(false);
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DatabaseException("Unable to open connection to database");
+            throw new DataAccessException("Unable to open connection to database");
         }
 
         return conn;
     }
 
-    public void deleteEverythingOfUser(User u) throws DatabaseException { //does not make new usermodel of username given
-        uDao.deleteUser(u);
-        pDao.deleteAllPeopleofUser(u);
-        eDao.deleteAllEventsOfUser(u);
-
-    }
-
-    public Connection getConnection() throws DatabaseException {
+    public Connection getConnection() throws DataAccessException {
         if(conn == null) {
             return openConnection();
         } else {
@@ -85,7 +54,7 @@ public class Database {
     }
 
 
-    public void closeConnection(boolean commit) throws DatabaseException {
+    public void closeConnection(boolean commit) throws DataAccessException {
         try {
             if (commit) {
                 //This will commit the changes to the database
@@ -100,33 +69,37 @@ public class Database {
             conn = null;
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DatabaseException("Unable to close database connection");
+            throw new DataAccessException("Unable to close database connection");
         }
     }
 
-    public void clearTables() throws DatabaseException {
-        aDao.clear();
-        uDao.clear();
-        pDao.clear();
-        eDao.clear();
-
-
+    public void clearAll() throws DataAccessException {
+        authTokenDao.clear();
+        userDao.clear();
+        personDao.clear();
+        eventDao.clear();
     }
 
-    public UserDao getuDao() {
-        return uDao;
+    public void removeUser(User u) throws DataAccessException {
+        userDao.deleteUser(u);
+        personDao.deleteAllPeopleofUser(u);
+        eventDao.deleteAllEventsOfUser(u);
     }
 
-    public PersonDao getpDao() {
-        return pDao;
+    public UserDao getuserDao() {
+        return userDao;
     }
 
-    public EventDao geteDao() {
-        return eDao;
+    public PersonDao getpersonDao() {
+        return personDao;
     }
 
-    public AuthTokenDao getaDao() {
-        return aDao;
+    public EventDao geteventDao() {
+        return eventDao;
+    }
+
+    public AuthTokenDao getauthTokenDao() {
+        return authTokenDao;
     }
 }
 

@@ -21,20 +21,20 @@ public class PersonIDService {
 
         try{
             db.openConnection();
-            PersonDao pDao = db.getpDao();
-            AuthTokenDao aDao = db.getaDao();
-            UserDao userDao = db.getuDao();
+            PersonDao personDao = db.getpersonDao();
+            AuthTokenDao authTokenDao = db.getauthTokenDao();
+            UserDao userDao = db.getuserDao();
 
 
-            if(aDao.validAuthToken(authtoken)){
-                AuthToken auth = aDao.getAuthToken(authtoken);
+            if(authTokenDao.validAuthToken(authtoken)){
+                AuthToken auth = authTokenDao.getAuthToken(authtoken);
                 User user = userDao.getUser(auth.getUsername());
 
                 if (!personID.equals(userDao.getPersonIDOfUser(user))){
-                    throw new Database.DatabaseException("{\"message\" : \" internal server error\"}");
+                    throw new DataAccessException("{\"message\" : \" internal server error\"}");
                 }
-                if (pDao.find(personID)){
-                    Person out = pDao.selectSinglePerson(personID);
+                if (personDao.find(personID)){
+                    Person out = personDao.selectSinglePerson(personID);
                     idResult = new PersonIDResult(out);
                 }
 
@@ -44,12 +44,12 @@ public class PersonIDService {
             db.closeConnection(true);
             idResult.setSuccess(true);
 
-        } catch (Database.DatabaseException e){
+        } catch (DataAccessException e){
             idResult.setSuccess(false);
             idResult.setMessage(e.getMessage());
             try{
                 db.closeConnection(false);
-            }catch (Database.DatabaseException d){
+            }catch (DataAccessException d){
                 idResult.setSuccess(false);
                 idResult.setMessage(d.getMessage());
             }

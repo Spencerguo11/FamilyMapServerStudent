@@ -10,7 +10,7 @@ import service.LoadService;
 import java.io.*;
 import java.net.HttpURLConnection;
 
-public class LoadHandler implements HttpHandler {
+public class LoadHandler extends RootHandler  {
 
     public LoadHandler(){}
 
@@ -55,9 +55,4 @@ public class LoadHandler implements HttpHandler {
         }
     }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
 }

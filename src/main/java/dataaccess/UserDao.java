@@ -11,7 +11,7 @@ public class UserDao {
 
     public UserDao() {}
 
-    public void setConnection(Connection c) throws Database.DatabaseException{
+    public void setConnection(Connection c) throws DataAccessException{
         conn = c;
     }
     /**
@@ -19,31 +19,25 @@ public class UserDao {
      * @param user
      * @throws DataAccessException
      */
-    public void insert(User user) throws Database.DatabaseException {
+    public void insert(User user) throws DataAccessException {
+        String sql = "insert into User (username, password, email, firstName, lastName, gender, personId) values (?,?,?,?,?,?,?)";
 
-        try {
-            PreparedStatement stmt = null;
-            try {
-                String sql = "insert into User (username, password, email, firstName, lastName, gender, personId) values (?,?,?,?,?,?,?)";
-                stmt = conn.prepareStatement(sql);
-                stmt.setString(1, user.getUsername());
-                stmt.setString(2, user.getPassword());
-                stmt.setString(3, user.getEmail());
-                stmt.setString(4, user.getFirstName());
-                stmt.setString(5, user.getLastName());
-                stmt.setString(6, user.getGender());
-                stmt.setString(7, user.getPersonID());
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
 
-                if (stmt.executeUpdate() != 1) {
-                    throw new Database.DatabaseException("error inserting user");
-                }
-            } finally {
-                if (stmt != null) {
-                    stmt.close();
-                }
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getEmail());
+            stmt.setString(4, user.getFirstName());
+            stmt.setString(5, user.getLastName());
+            stmt.setString(6, user.getGender());
+            stmt.setString(7, user.getPersonID());
+
+            if (stmt.executeUpdate() != 1) {
+                throw new DataAccessException("error inserting user");
             }
+
         } catch (SQLException e) {
-                throw new Database.DatabaseException("error inserting user");
+                throw new DataAccessException("error inserting user");
             }
 
     }
@@ -54,33 +48,23 @@ public class UserDao {
      * @return
      * @throws DataAccessException
      */
-    public boolean find(String username) throws Database.DatabaseException {
-        try {
-            PreparedStatement stmt = null;
+    public boolean find(String username) throws DataAccessException {
+        String sql = "select * from User WHERE username = '" + username + "'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+
             ResultSet rs = null;
-            try {
-                String sql = "select * from User WHERE username = '" + username + "'";
-                stmt = conn.prepareStatement(sql);
 
-                rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
-                if (!rs.next() ) {
-                    throw new Database.DatabaseException("error finding username");
-                } else {
-                    return true;
-                }
+            if (!rs.next() ) {
+                throw new DataAccessException("error finding username");
+            } else {
+                return true;
             }
-            finally {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
+
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error finding username");
+            throw new DataAccessException("error finding username");
         }
 
     }
@@ -89,7 +73,7 @@ public class UserDao {
      * clears user table
      * @throws DataAccessException
      */
-    public void clear() throws Database.DatabaseException {
+    public void clear() throws DataAccessException {
         try {
             Statement stmt = null;
             try {
@@ -107,142 +91,109 @@ public class UserDao {
             }
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error resetting table");
+            throw new DataAccessException("error resetting table");
         }
     }
 
-    public boolean ExistingUsernamePassword(User user) throws Database.DatabaseException {
-     try{
-         PreparedStatement stmt = null;
-         ResultSet rs = null;
-         try {
-             String username = user.getUsername();
-             String sql = "select * from User WHERE username = '" + user.getUsername() + "' AND password = '" + user.getPassword() + "'";
-             stmt = conn.prepareStatement(sql);
+    public boolean ExistingUsernamePassword(User user) throws DataAccessException {
+        String sql = "select * from User WHERE username = '" + user.getUsername() + "' AND password = '" + user.getPassword() + "'";
+         try(PreparedStatement stmt = conn.prepareStatement(sql)){
+
+             ResultSet rs = null;
+
              rs =  stmt.executeQuery();
 
              if(!rs.next()) {
-                 throw new Database.DatabaseException("error finding username/password");
+                 throw new DataAccessException("error finding username/password");
              } else {
                  return true;
              }
-         }
-         finally {
-             if (rs != null) {
-                 rs.close();
-             }
-             if (stmt != null) {
-                 stmt.close();
-             }
-         }
-     } catch (SQLException e) {
-         throw new Database.DatabaseException("error finding username/password");
-         }
-     }
 
-     public User getUser(String username) throws Database.DatabaseException {
-        User user = new User();
-         try {
-             PreparedStatement stmt = null;
+         } catch (SQLException e) {
+             throw new DataAccessException("error finding username/password");
+             }
+    }
+
+     public User getUser(String username) throws DataAccessException {
+         String sql = "select * from User WHERE username = '" + username +"'";
+         User user = new User();
+         try (PreparedStatement stmt = conn.prepareStatement(sql)){
              ResultSet rs = null;
-             try {
-                 String sql = "select * from User WHERE username = '" + username +"'";
-                 stmt = conn.prepareStatement(sql);
 
-                 rs = stmt.executeQuery();
-                 while (rs.next()) {
-                     user.setUsername(rs.getString(1));
-                     user.setPassword(rs.getString(2));
-                     user.setEmail(rs.getString(3));
-                     user.setFirstName(rs.getString(4));
-                     user.setLastName(rs.getString(5));
-                     user.setGender(rs.getString(6));
-                     user.setPersonID(UUID.randomUUID().toString()); //
-                 }
+             rs = stmt.executeQuery();
+             while (rs.next()) {
+                 user.setUsername(rs.getString(1));
+                 user.setPassword(rs.getString(2));
+                 user.setEmail(rs.getString(3));
+                 user.setFirstName(rs.getString(4));
+                 user.setLastName(rs.getString(5));
+                 user.setGender(rs.getString(6));
+                 user.setPersonID(UUID.randomUUID().toString()); //
              }
-             finally {
-                 if (rs != null) {
-                     rs.close();
-                 }
-                 if (stmt != null) {
-                     stmt.close();
-                 }
-             }
+
          }
          catch (SQLException e) {
-             throw new Database.DatabaseException("error getting username");
+             throw new DataAccessException("error getting username");
          }
          return user;
      }
 
-    public String getPersonIDOfUser(User user) throws Database.DatabaseException {
+    public String getPersonIDOfUser(User user) throws DataAccessException {
         String personID = new String();
-        try {
-            PreparedStatement stmt = null;
+        String sql = "select * from User WHERE username = '" + user.getUsername() + "' AND password = '" + user.getPassword() + "'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
             ResultSet rs = null;
-            try {
-                String sql = "select * from User WHERE username = '" + user.getUsername() + "' AND password = '" + user.getPassword() + "'";
-                stmt = conn.prepareStatement(sql);
-
-                rs = stmt.executeQuery();
-                while (rs.next()) {
-                    personID = rs.getString(7);
-                }
-
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                personID = rs.getString(7);
             }
-            finally {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
+
+
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error getting personID of user");
+            throw new DataAccessException("error getting personID of user");
         }
 
         return personID;
     }
+//
+//    public String tableToString() throws DataAccessException{
+//        StringBuilder out = new StringBuilder();
+//        try {
+//            PreparedStatement stmt = null;
+//            ResultSet rs = null;
+//            try {
+//                String sql = "select * from User";
+//                stmt = conn.prepareStatement(sql);
+//
+//                rs = stmt.executeQuery();
+//                while (rs.next()) {
+//                    String word = rs.getString(1);
+//                    String password = rs.getString(2);
+//                    String email = rs.getString(3);
+//                    String firstName = rs.getString(4);
+//                    String lastName = rs.getString(5);
+//                    String gender = rs.getString(6);
+//                    String personID = rs.getString(7);
+//                    out.append((word + "\t" + password + "\t" + email + "\t" + firstName + "\t" + lastName + "\t" + gender + "\t" + personID + "\n"));
+//                }
+//            }
+//            finally {
+//                if (rs != null) {
+//                    rs.close();
+//                }
+//                if (stmt != null) {
+//                    stmt.close();
+//                }
+//            }
+//        }
+//        catch (SQLException e) {
+//            throw new DataAccessException("error toString table");
+//        }
+//        return out.toString();
+//    }
 
-    public String tableToString() throws Database.DatabaseException{
-        StringBuilder out = new StringBuilder();
-        try {
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                String sql = "select * from User";
-                stmt = conn.prepareStatement(sql);
-
-                rs = stmt.executeQuery();
-                while (rs.next()) {
-                    String word = rs.getString(1);
-                    String password = rs.getString(2);
-                    String email = rs.getString(3);
-                    String firstName = rs.getString(4);
-                    String lastName = rs.getString(5);
-                    String gender = rs.getString(6);
-                    String personID = rs.getString(7);
-                    out.append((word + "\t" + password + "\t" + email + "\t" + firstName + "\t" + lastName + "\t" + gender + "\t" + personID + "\n"));
-                }
-            }
-            finally {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
-        }
-        catch (SQLException e) {
-            throw new Database.DatabaseException("error toString table");
-        }
-        return out.toString();
-    }
-
-    public void deleteUser(User user) throws Database.DatabaseException {
+    public void deleteUser(User user) throws DataAccessException {
         try {
             Statement stmt = null;
             try {
@@ -259,7 +210,7 @@ public class UserDao {
             }
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error deleting user");
+            throw new DataAccessException("error deleting user");
         }
     }
 

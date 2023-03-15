@@ -5,12 +5,12 @@ import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-public class Decoder {
+public class Loader {
 
-    public static StringArray decodeNames(String file){
+    public static NameData decodeNames(String file){
         Gson gson = new Gson();
         try{
-            StringArray temp = gson.fromJson(new FileReader(file), StringArray.class);
+            NameData temp = gson.fromJson(new FileReader(file), NameData.class);
             return temp;
 
         } catch (FileNotFoundException e){
@@ -19,10 +19,10 @@ public class Decoder {
         return null;
     }
 
-    public static LocationArray decodeLocations(String file){
+    public static LocationData decodeLocations(String file){
         Gson gson = new Gson();
         try{
-            LocationArray temp = gson.fromJson(new FileReader(file), LocationArray.class);
+            LocationData temp = gson.fromJson(new FileReader(file), LocationData.class);
             return temp;
 
         } catch (FileNotFoundException e){

@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthTokenDao;
+import dataaccess.DataAccessException;
 import dataaccess.Database;
 import dataaccess.UserDao;
 import model.AuthToken;
@@ -23,30 +24,30 @@ public class UserLoginService {
 
     public LoginResult login(LoginRequest input) {
         LoginResult loginResult = new LoginResult();
-        UserDao uDao = db.getuDao();
-        AuthTokenDao aDao = db.getaDao();
+        UserDao userDao = db.getuserDao();
+        AuthTokenDao authTokenDao = db.getauthTokenDao();
 
         try{
             db.openConnection();
             User user = new User(input);
 
-            if (uDao.ExistingUsernamePassword(user)) { //yes, the username and password are valid
+            if (userDao.ExistingUsernamePassword(user)) { //yes, the username and password are valid
                 AuthToken returnAuth = new AuthToken(user);
 
-                aDao.insert(returnAuth);
+                authTokenDao.insert(returnAuth);
 
-                loginResult = new LoginResult(returnAuth, uDao.getPersonIDOfUser(user));
+                loginResult = new LoginResult(returnAuth, userDao.getPersonIDOfUser(user));
                 loginResult.setSuccess(true);
 
                 db.closeConnection(true);
             }
 
-        } catch (Database.DatabaseException d){
+        } catch ( DataAccessException d){
             loginResult.setMessage(d.getMessage());
             loginResult.setSuccess(false);
             try{
                 db.closeConnection(false);
-            }catch (Database.DatabaseException e){
+            }catch (DataAccessException e){
                 loginResult.setSuccess(false);
                 loginResult.setMessage(e.getMessage());
             }

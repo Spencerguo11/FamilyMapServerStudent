@@ -1,11 +1,11 @@
 package Decode;
 
-public class LocationArray {
+public class LocationData {
 
     private IndividualLocation[] data;
 
-    public LocationArray() {
-        data = new IndividualLocation[978];
+    public LocationData() {
+        data = new IndividualLocation[999];
     }
 
     public IndividualLocation[] getLocations() {

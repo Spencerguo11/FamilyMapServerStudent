@@ -9,7 +9,7 @@ import service.UserLoginService;
 import java.io.*;
 import java.net.*;
 
-public class LoginHandler implements HttpHandler {
+public class LoginHandler extends RootHandler  {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -50,9 +50,4 @@ public class LoginHandler implements HttpHandler {
         }
     }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
 }

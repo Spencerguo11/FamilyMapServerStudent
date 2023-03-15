@@ -16,7 +16,7 @@
 //public class UserDAOTest {
 //    private Database db;
 //    private User bestUser;
-//    private UserDAO uDao;
+//    private UserDAO userDao;
 //
 //    @BeforeEach
 //    public void setUp() throws DataAccessException {
@@ -27,9 +27,9 @@
 //                "m", "5");
 //
 //
-//        uDao = new UserDAO();
+//        userDao = new UserDAO();
 //
-//        uDao.clear();
+//        userDao.clear();
 //    }
 //
 //    @AfterEach
@@ -41,9 +41,9 @@
 //    @Test
 //    public void insertPass() throws DataAccessException {
 //
-//        uDao.insert(bestUser);
+//        userDao.insert(bestUser);
 //
-//        boolean compareTest = uDao.find(bestUser.getUsername());
+//        boolean compareTest = userDao.find(bestUser.getUsername());
 //
 //        assertNotNull(compareTest);
 //
@@ -53,18 +53,18 @@
 //    @Test
 //    public void insertFail() throws DataAccessException {
 //
-//        uDao.insert(bestUser);
+//        userDao.insert(bestUser);
 //
-//        assertThrows(DataAccessException.class, () -> uDao.insert(bestUser));
+//        assertThrows(DataAccessException.class, () -> userDao.insert(bestUser));
 //    }
 //
 //
 //    @Test
 //    public void findPass() throws DataAccessException {
 //
-//        uDao.insert(bestUser);
+//        userDao.insert(bestUser);
 //
-//        boolean compareTest = uDao.find(bestUser.getUsername());
+//        boolean compareTest = userDao.find(bestUser.getUsername());
 //
 //        assertNotNull(compareTest);
 //
@@ -73,7 +73,7 @@
 //
 //    @Test
 //    public void findFail() throws DataAccessException {
-//        boolean person = uDao.find(null);
+//        boolean person = userDao.find(null);
 //        assertNull(person);
 //    }
 //
@@ -87,17 +87,17 @@
 //        User person3 = new User("EJ", "123", "EJ@byu.edu", "J", "Lin",
 //                "m", "3");
 //
-//        uDao.insert(person1);
-//        uDao.insert(person2);
-//        uDao.insert(person3);
+//        userDao.insert(person1);
+//        userDao.insert(person2);
+//        userDao.insert(person3);
 //
-//        boolean compareTest = uDao.find(person1.getUsername());
+//        boolean compareTest = userDao.find(person1.getUsername());
 //        assertNotNull(compareTest);
 //        assertEquals(person1, compareTest);
 //
-//        uDao.clear();
+//        userDao.clear();
 //
-//        boolean failedPerson = uDao.find(person1.getUsername());
+//        boolean failedPerson = userDao.find(person1.getUsername());
 //        assertNull(failedPerson);
 //
 //    }

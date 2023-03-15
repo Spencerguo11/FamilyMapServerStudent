@@ -9,7 +9,7 @@ import service.ClearService;
 import java.io.*;
 import java.net.HttpURLConnection;
 
-public class ClearHandler implements HttpHandler {
+public class ClearHandler extends RootHandler {
 
     public ClearHandler(){}
 
@@ -55,9 +55,4 @@ public class ClearHandler implements HttpHandler {
         }
     }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
 }

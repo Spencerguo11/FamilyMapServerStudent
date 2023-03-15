@@ -10,13 +10,13 @@ import java.util.UUID;
 
 public class EventDao {
     private Connection conn;
-    private LocationArray locationArray;
+    private LocationData locationData;
 
     public EventDao() {
-        locationArray = Decoder.decodeLocations("json/locations.json");
+        locationData = Loader.decodeLocations("json/locations.json");
     }
 
-    public void setConnection(Connection c) throws Database.DatabaseException{
+    public void setConnection(Connection c) throws DataAccessException{
         conn = c;
     }
 
@@ -25,33 +25,26 @@ public class EventDao {
      * @param event
      * @throws DataAccessException
      */
-    public void insert(Event event) throws Database.DatabaseException {
+    public void insert(Event event) throws DataAccessException {
+        String sql = "insert into Event (eventID, associatedUsername, peronID, latitude, longitude, country, city, eventType, year) values (?,?,?,?,?,?,?,?,?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
 
-        try {
-            PreparedStatement stmt = null;
-            try {
-                String sql = "insert into Event (eventID, associatedUsername, peronID, latitude, longitude, country, city, eventType, year) values (?,?,?,?,?,?,?,?,?)";
-                stmt = conn.prepareStatement(sql);
-                stmt.setString(1, event.getEventID());
-                stmt.setString(2, event.getAssociatedUsername());
-                stmt.setString(3, event.getPersonID());
-                stmt.setFloat(4, event.getLatitude());
-                stmt.setFloat(5, event.getLongitude());
-                stmt.setString(6, event.getCountry());
-                stmt.setString(7, event.getCity());
-                stmt.setString(8, event.getEventType());
-                stmt.setInt(9, event.getYear());
+            stmt.setString(1, event.getEventID());
+            stmt.setString(2, event.getAssociatedUsername());
+            stmt.setString(3, event.getPersonID());
+            stmt.setFloat(4, event.getLatitude());
+            stmt.setFloat(5, event.getLongitude());
+            stmt.setString(6, event.getCountry());
+            stmt.setString(7, event.getCity());
+            stmt.setString(8, event.getEventType());
+            stmt.setInt(9, event.getYear());
 
-                if (stmt.executeUpdate() != 1) {
-                    throw new Database.DatabaseException("error inserting");
-                }
-            } finally {
-                if (stmt != null) {
-                    stmt.close();
-                }
+            if (stmt.executeUpdate() != 1) {
+                throw new DataAccessException("error inserting");
             }
+
         }catch (SQLException e) {
-            throw new Database.DatabaseException("error inserting");
+            throw new DataAccessException("error inserting");
         }
     }
 
@@ -61,33 +54,22 @@ public class EventDao {
      * @return
      * @throws DataAccessException
      */
-    public boolean find(String eventID) throws Database.DatabaseException {
-        try {
-            PreparedStatement stmt = null;
+    public boolean find(String eventID) throws DataAccessException {
+        String sql = "select * from Event WHERE eventID = '" + eventID + "'";;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+
             ResultSet rs = null;
-            try {
-                String sql = "select * from Event WHERE eventID = '" + eventID + "'";;
-                stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
 
-                rs = stmt.executeQuery();
+            if (!rs.next() ) {
+                throw new DataAccessException("error finding eventID");
+            } else {
+                return true;
+            }
 
-                if (!rs.next() ) {
-                    throw new Database.DatabaseException("error finding eventID");
-                } else {
-                    return true;
-                }
-            }
-            finally {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error finding eventID");
+            throw new DataAccessException("error finding eventID");
         }
     }
 
@@ -95,128 +77,97 @@ public class EventDao {
      * clear event table
      * @throws DataAccessException
      */
-    public void clear() throws Database.DatabaseException {
+    public void clear() throws DataAccessException {
         try {
             Statement stmt = null;
-            try {
-                stmt = conn.createStatement();
 
-                stmt.executeUpdate("drop table if exists Event");
-                stmt.executeUpdate("create table Event (eventID VARCHAR(50) NOT NULL PRIMARY KEY, associatedUsername VARCHAR(50) NOT NULL, peronID VARCHAR(50) NOT NULL, latitude REAL NOT NULL, " +
-                        "longitude REAL NOT NULL, country VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, eventType VARCHAR(50) NOT NULL, year INT NOT NULL, CONSTRAINT event_info UNIQUE (eventID))");
-            }
-            finally {
-                if (stmt != null) {
-                    stmt.close();
-                    stmt = null;
-                }
-            }
+            stmt = conn.createStatement();
+
+            stmt.executeUpdate("drop table if exists Event");
+            stmt.executeUpdate("create table Event (eventID VARCHAR(50) NOT NULL PRIMARY KEY, associatedUsername VARCHAR(50) NOT NULL, peronID VARCHAR(50) NOT NULL, latitude REAL NOT NULL, " +
+                    "longitude REAL NOT NULL, country VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, eventType VARCHAR(50) NOT NULL, year INT NOT NULL, CONSTRAINT event_info UNIQUE (eventID))");
+
+
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error clearing table");
+            throw new DataAccessException("error clearing table");
         }
     }
 
-    public void deleteAllEventsOfUser(User user) throws Database.DatabaseException {
+    public void deleteAllEventsOfUser(User user) throws DataAccessException {
         try {
             Statement stmt = null;
-            try {
-                stmt = conn.createStatement();
 
-                stmt.executeUpdate("DELETE FROM Event WHERE associatedUsername = '" + user.getUsername() + "'");
-            }
-            finally {
-                if (stmt != null) {
-                    stmt.close();
-                    stmt = null;
-                }
-            }
+            stmt = conn.createStatement();
+
+            stmt.executeUpdate("DELETE FROM Event WHERE associatedUsername = '" + user.getUsername() + "'");
+
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error deleting all events of user");
+            throw new DataAccessException("error deleting all events of user");
         }
     }
 
-    public Event selectSingleEvent(String eventID) throws Database.DatabaseException {
+    public Event selectSingleEvent(String eventID) throws DataAccessException {
         Event event = new Event();
-        try {
-            PreparedStatement stmt = null;
+        String sql = "select * from Event WHERE eventID = '" + eventID +"'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
             ResultSet rs = null;
-            try {
-                String sql = "select * from Event WHERE eventID = '" + eventID +"'";
-                stmt = conn.prepareStatement(sql);
 
-                rs = stmt.executeQuery();
-                while (rs.next()) {
-                    event.setEventID(rs.getString(1));
-                    event.setAssociatedUsername(rs.getString(2));
-                    event.setPersonID(rs.getString(3));
-                    event.setLatitude(rs.getFloat(4));
-                    event.setLongitude(rs.getFloat(5));
-                    event.setCountry(rs.getString(6));
-                    event.setCity(rs.getString(7));
-                    event.setEventType(rs.getString(8));
-                    event.setYear(rs.getInt(9));
-                }
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                event.setEventID(rs.getString(1));
+                event.setAssociatedUsername(rs.getString(2));
+                event.setPersonID(rs.getString(3));
+                event.setLatitude(rs.getFloat(4));
+                event.setLongitude(rs.getFloat(5));
+                event.setCountry(rs.getString(6));
+                event.setCity(rs.getString(7));
+                event.setEventType(rs.getString(8));
+                event.setYear(rs.getInt(9));
+
             }
-            finally {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
+
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error getting single event");
+            throw new DataAccessException("error getting single event");
         }
         return event;
     }
 
-    public Event[] selectAllEvents(String username) throws Database.DatabaseException {
+    public Event[] selectAllEvents(String username) throws DataAccessException {
         ArrayList<Event> eventList = new ArrayList<>();
-        try {
-            PreparedStatement stmt = null;
+        String sql = "select * from Event WHERE associatedUsername = '" + username + "'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
             ResultSet rs = null;
-            try {
-                String sql = "select * from Event WHERE associatedUsername = '" + username + "'";
-                stmt = conn.prepareStatement(sql);
 
-                rs = stmt.executeQuery();
-                while (rs.next()) {
-                    Event event = new Event();
-                    event.setEventID(rs.getString(1));
-                    event.setAssociatedUsername(rs.getString(2));
-                    event.setPersonID(rs.getString(3));
-                    event.setLatitude(rs.getFloat(4));
-                    event.setLongitude(rs.getFloat(5));
-                    event.setCountry(rs.getString(6));
-                    event.setCity(rs.getString(7));
-                    event.setEventType(rs.getString(8));
-                    event.setYear(rs.getInt(9));
-                    eventList.add(event);
-                }
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Event event = new Event();
+                event.setEventID(rs.getString(1));
+                event.setAssociatedUsername(rs.getString(2));
+                event.setPersonID(rs.getString(3));
+                event.setLatitude(rs.getFloat(4));
+                event.setLongitude(rs.getFloat(5));
+                event.setCountry(rs.getString(6));
+                event.setCity(rs.getString(7));
+                event.setEventType(rs.getString(8));
+                event.setYear(rs.getInt(9));
+                eventList.add(event);
+
             }
-            finally {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
+
         }
         catch (SQLException e) {
-            throw new Database.DatabaseException("error selecting all events");
+            throw new DataAccessException("error selecting all events");
         }
         Event[] eventFinal = new Event[eventList.size()];
         eventFinal = eventList.toArray(eventFinal);
         return eventFinal;
     }
 
-    public int generateRootEvent(Person root) throws Database.DatabaseException {
-        int rootBirthYear = 1960;
+    public int generateRootEvent(Person root) throws DataAccessException {
+        int rootBirthYear = 1900;
 
         //making root's birth
         Event birth = new Event();
@@ -226,7 +177,7 @@ public class EventDao {
         birth.setAssociatedUsername(root.getAssociatedUsername());
         birth.setPersonID(root.getPersonID());
         int r = rand.nextInt(977);
-        IndividualLocation randLocation = locationArray.getLocations()[r];
+        IndividualLocation randLocation = locationData.getLocations()[r];
         birth.setLatitude(randLocation.getLatitude());
         birth.setLongitude(randLocation.getLongitude());
         birth.setCountry(randLocation.getCountry());
@@ -242,7 +193,7 @@ public class EventDao {
         baptism.setAssociatedUsername(root.getAssociatedUsername());
         baptism.setPersonID(root.getPersonID());
         r = rand.nextInt(977);
-        randLocation = locationArray.getLocations()[r];
+        randLocation = locationData.getLocations()[r];
         baptism.setLatitude(randLocation.getLatitude());
         baptism.setLongitude(randLocation.getLongitude());
         baptism.setCountry(randLocation.getCountry());
@@ -258,7 +209,7 @@ public class EventDao {
         adventure.setAssociatedUsername(root.getAssociatedUsername());
         adventure.setPersonID(root.getPersonID());
         r = rand.nextInt(977);
-        randLocation = locationArray.getLocations()[r];
+        randLocation = locationData.getLocations()[r];
         adventure.setLatitude(randLocation.getLatitude());
         adventure.setLongitude(randLocation.getLongitude());
         adventure.setCountry(randLocation.getCountry());
@@ -274,7 +225,7 @@ public class EventDao {
         purchase.setAssociatedUsername(root.getAssociatedUsername());
         purchase.setPersonID(root.getPersonID());
         r = rand.nextInt(977);
-        randLocation = locationArray.getLocations()[r];
+        randLocation = locationData.getLocations()[r];
         purchase.setLatitude(randLocation.getLatitude());
         purchase.setLongitude(randLocation.getLongitude());
         purchase.setCountry(randLocation.getCountry());
@@ -287,7 +238,7 @@ public class EventDao {
         return rootBirthYear;
     }
 
-    public int generateEventDataParents(Person mother, Person father, int orphanBirthYear) throws Database.DatabaseException { //not recursive but will make 4 events for the given person, for now just birth
+    public int generateEventDataParents(Person mother, Person father, int orphanBirthYear) throws DataAccessException { //not recursive but will make 4 events for the given person, for now just birth
 
         Event birth = new Event(); //making mothers's birth
         Random rand = new Random();
@@ -297,7 +248,7 @@ public class EventDao {
         birth.setAssociatedUsername(mother.getAssociatedUsername());
         birth.setPersonID(mother.getPersonID());
         int r = rand.nextInt(977);
-        IndividualLocation randLocation = locationArray.getLocations()[r];
+        IndividualLocation randLocation = locationData.getLocations()[r];
         birth.setLatitude(randLocation.getLatitude());
         birth.setLongitude(randLocation.getLongitude());
         birth.setCountry(randLocation.getCountry());
@@ -311,7 +262,7 @@ public class EventDao {
         birth.setAssociatedUsername(father.getAssociatedUsername());
         birth.setPersonID(father.getPersonID());
         r = rand.nextInt(977);
-        randLocation = locationArray.getLocations()[r];
+        randLocation = locationData.getLocations()[r];
         birth.setLatitude(randLocation.getLatitude());
         birth.setLongitude(randLocation.getLongitude());
         birth.setCountry(randLocation.getCountry());
@@ -327,7 +278,7 @@ public class EventDao {
         death.setAssociatedUsername(mother.getAssociatedUsername());
         death.setPersonID(mother.getPersonID());
         r = rand.nextInt(977);
-        randLocation = locationArray.getLocations()[r];
+        randLocation = locationData.getLocations()[r];
         death.setLatitude(randLocation.getLatitude());
         death.setLongitude(randLocation.getLongitude());
         death.setCountry(randLocation.getCountry());
@@ -341,7 +292,7 @@ public class EventDao {
         death.setAssociatedUsername(father.getAssociatedUsername());
         death.setPersonID(father.getPersonID());
         r = rand.nextInt(977);
-        randLocation = locationArray.getLocations()[r];
+        randLocation = locationData.getLocations()[r];
         death.setLatitude(randLocation.getLatitude());
         death.setLongitude(randLocation.getLongitude());
         death.setCountry(randLocation.getCountry());
@@ -357,7 +308,7 @@ public class EventDao {
         marriage.setAssociatedUsername(mother.getAssociatedUsername());
         marriage.setPersonID(mother.getPersonID());
         r = rand.nextInt(977);
-        randLocation = locationArray.getLocations()[r];
+        randLocation = locationData.getLocations()[r];
         marriage.setLatitude(randLocation.getLatitude());
         marriage.setLongitude(randLocation.getLongitude());
         marriage.setCountry(randLocation.getCountry());
@@ -385,7 +336,7 @@ public class EventDao {
         boughtHouse.setAssociatedUsername(mother.getAssociatedUsername());
         boughtHouse.setPersonID(mother.getPersonID());
         r = rand.nextInt(977);
-        randLocation = locationArray.getLocations()[r];
+        randLocation = locationData.getLocations()[r];
         boughtHouse.setLatitude(randLocation.getLatitude());
         boughtHouse.setLongitude(randLocation.getLongitude());
         boughtHouse.setCountry(randLocation.getCountry());
@@ -401,7 +352,7 @@ public class EventDao {
         mission.setAssociatedUsername(father.getAssociatedUsername());
         mission.setPersonID(father.getPersonID());
         r = rand.nextInt(977);
-        randLocation = locationArray.getLocations()[r];
+        randLocation = locationData.getLocations()[r];
         mission.setLatitude(randLocation.getLatitude());
         mission.setLongitude(randLocation.getLongitude());
         mission.setCountry(randLocation.getCountry());
@@ -415,44 +366,33 @@ public class EventDao {
     }
 
 
-    public String tableToString() throws Database.DatabaseException {
-        StringBuilder out = new StringBuilder();
-        try {
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                String sql = "select * from Event";
-                stmt = conn.prepareStatement(sql);
-
-                rs = stmt.executeQuery();
-                while (rs.next()) {
-                    String eventID = rs.getString(1);
-                    String assocatedUsername = rs.getString(2);
-                    String personId = rs.getString(3);
-                    Float latitude = rs.getFloat(4);
-                    Float longitude = rs.getFloat(5);
-                    String country = rs.getString(6);
-                    String city = rs.getString(7);
-                    String eventType = rs.getString(8);
-                    int year = rs.getInt(9);
-
-                    out.append((eventID + "\t" + assocatedUsername + "\t" + personId + "\t" + latitude + "\t" + longitude + "\t" + country + "\t" + city + "\t" + eventType + "\t" + year + "\n"));
-                }
-            }
-            finally {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
-        }
-        catch (SQLException e) {
-            throw new Database.DatabaseException("error toString table");
-        }
-        return out.toString();
-    }
+//    public String tableToString() throws DataAccessException {
+//        StringBuilder out = new StringBuilder();
+//        String sql = "select * from Event";
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+//            ResultSet rs = null;
+//            rs = stmt.executeQuery();
+//            while (rs.next()) {
+//                String eventID = rs.getString(1);
+//                String assocatedUsername = rs.getString(2);
+//                String personId = rs.getString(3);
+//                Float latitude = rs.getFloat(4);
+//                Float longitude = rs.getFloat(5);
+//                String country = rs.getString(6);
+//                String city = rs.getString(7);
+//                String eventType = rs.getString(8);
+//                int year = rs.getInt(9);
+//
+//                out.append((eventID + "\t" + assocatedUsername + "\t" + personId + "\t" + latitude + "\t" + longitude + "\t" + country + "\t" + city + "\t" + eventType + "\t" + year + "\n"));
+//
+//            }
+//
+//        }
+//        catch (SQLException e) {
+//            throw new DataAccessException("error toString table");
+//        }
+//        return out.toString();
+//    }
 
 }
 

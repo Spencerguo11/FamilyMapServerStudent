@@ -8,7 +8,7 @@ import service.FillService;
 import java.io.*;
 import java.net.HttpURLConnection;
 
-public class FillHandler implements HttpHandler {
+public class FillHandler extends RootHandler {
 
     public FillHandler(){}
 
@@ -77,9 +77,4 @@ public class FillHandler implements HttpHandler {
         }
     }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
 }

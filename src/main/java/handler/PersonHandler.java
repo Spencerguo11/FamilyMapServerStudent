@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import dataaccess.DataAccessException;
 import dataaccess.Database;
 import result.PersonIDResult;
 import result.PersonResult;
@@ -15,7 +16,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 
-public class PersonHandler implements HttpHandler {
+public class PersonHandler extends RootHandler {
 
     public PersonHandler(){}
 
@@ -76,7 +77,7 @@ public class PersonHandler implements HttpHandler {
                         PersonResult out = myPersonService.person(authToken);
 
                         if(!out.getSuccess()) {
-                            throw new Database.DatabaseException(out.getMessage());
+                            throw new DataAccessException(out.getMessage());
                         }
 
                         myPersonResult.setSuccess(out.getSuccess());
@@ -108,7 +109,7 @@ public class PersonHandler implements HttpHandler {
             respBody.close();
 
             e.printStackTrace();
-        } catch (Database.DatabaseException e) {
+        } catch (DataAccessException e) {
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
             String jsonStr = new String("{\"message\" : \"" + e.getMessage() + "\"}");
             OutputStream respBody = exchange.getResponseBody();
@@ -119,9 +120,4 @@ public class PersonHandler implements HttpHandler {
         }
     }
 
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        sw.write(str);
-        sw.flush();
-    }
 }

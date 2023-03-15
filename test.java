@@ -22,13 +22,13 @@ public class EventService {
         try{
 
             db.openConnection();
-            EventDao eDao = db.geteDao();
-            AuthTokenDao aDao = db.getaDao();
+            EventDao eventDao = db.geteventDao();
+            AuthTokenDao authTokenDao = db.getauthTokenDao();
 
 
-            if(aDao.validAuthToken(authtoken)){
-                AuthToken auth = aDao.getAuthToken(authtoken);
-                result.setData(eDao.selectAllEvents(auth.getUsername()));
+            if(authTokenDao.validAuthToken(authtoken)){
+                AuthToken auth = authTokenDao.getAuthToken(authtoken);
+                result.setData(eventDao.selectAllEvents(auth.getUsername()));
                 db.closeConnection(true);
                 result.setSuccess(true);
             } else {

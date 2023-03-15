@@ -24,25 +24,25 @@ public class PersonService {
 
         try{
             db.openConnection();
-            PersonDao pDao = db.getpDao();
-            AuthTokenDao aDao = db.getaDao();
+            PersonDao personDao = db.getpersonDao();
+            AuthTokenDao authTokenDao = db.getauthTokenDao();
 
 
-            if(aDao.validAuthToken(authtoken)){
-                AuthToken auth = aDao.getAuthToken(authtoken);
-                personResult.setData(pDao.selectAllPersons(auth.getUsername()));
+            if(authTokenDao.validAuthToken(authtoken)){
+                AuthToken auth = authTokenDao.getAuthToken(authtoken);
+                personResult.setData(personDao.selectAllPersons(auth.getUsername()));
             }
 
             db.closeConnection(true);
             personResult.setSuccess(true);
 
-        } catch (Database.DatabaseException e){
+        } catch (DataAccessException e){
             personResult.setSuccess(false);
             personResult.setMessage("{\"message\" : \" internal server error\"}");
             personResult.setMessage(e.getMessage());
             try{
                 db.closeConnection(false);
-            }catch (Database.DatabaseException d){
+            }catch (DataAccessException d){
                 personResult.setSuccess(false);
                 personResult.setMessage("{\"message\" : \" internal server error\"}");
                 personResult.setMessage(d.getMessage());

@@ -16,7 +16,7 @@
 //public class PersonDAOTest {
 //    private Database db;
 //    private Person bestPerson;
-//    private PersonDAO pDao;
+//    private PersonDAO personDao;
 //
 //    @BeforeEach
 //    public void setUp() throws DataAccessException {
@@ -29,9 +29,9 @@
 //
 //        Connection conn = db.getConnection();
 //
-//        pDao = new PersonDAO();
+//        personDao = new PersonDAO();
 //
-//        pDao.clear();
+//        personDao.clear();
 //    }
 //
 //    @AfterEach
@@ -43,9 +43,9 @@
 //    @Test
 //    public void insertPass() throws DataAccessException {
 //
-//        pDao.insert(bestPerson);
+//        personDao.insert(bestPerson);
 //
-//        boolean compareTest = pDao.find(bestPerson.getPersonID());
+//        boolean compareTest = personDao.find(bestPerson.getPersonID());
 //
 //        assertNotNull(compareTest);
 //
@@ -55,18 +55,18 @@
 //    @Test
 //    public void insertFail() throws DataAccessException {
 //
-//        pDao.insert(bestPerson);
+//        personDao.insert(bestPerson);
 //
-//        assertThrows(DataAccessException.class, () -> pDao.insert(bestPerson));
+//        assertThrows(DataAccessException.class, () -> personDao.insert(bestPerson));
 //    }
 //
 //
 //    @Test
 //    public void findPass() throws DataAccessException {
 //
-//        pDao.insert(bestPerson);
+//        personDao.insert(bestPerson);
 //
-//        boolean compareTest = pDao.find(bestPerson.getPersonID());
+//        boolean compareTest = personDao.find(bestPerson.getPersonID());
 //
 //        assertNotNull(compareTest);
 //
@@ -75,7 +75,7 @@
 //
 //    @Test
 //    public void findFail() throws DataAccessException {
-//        boolean person = pDao.find(null);
+//        boolean person = personDao.find(null);
 //        assertNull(person);
 //    }
 //
@@ -89,17 +89,17 @@
 //        Person person3 = new Person("User", "3", "Kai", "Kim",
 //                "m", "123", "456", "789");
 //
-//        pDao.insert(person1);
-//        pDao.insert(person2);
-//        pDao.insert(person3);
+//        personDao.insert(person1);
+//        personDao.insert(person2);
+//        personDao.insert(person3);
 //
-//        boolean compareTest = pDao.find(person1.getPersonID());
+//        boolean compareTest = personDao.find(person1.getPersonID());
 //        assertNotNull(compareTest);
 //        assertEquals(person1, compareTest);
 //
-//        pDao.clear();
+//        personDao.clear();
 //
-//        boolean failedPerson = pDao.find(person1.getPersonID());
+//        boolean failedPerson = personDao.find(person1.getPersonID());
 //        assertNull(failedPerson);
 //
 //    }

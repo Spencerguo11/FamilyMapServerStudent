@@ -25,26 +25,26 @@ public class LoadService {
         LoadResult loadResult = new LoadResult();
         try {
             db.openConnection();
-            db.clearTables();
+            db.clearAll();
 
-            UserDao uDao = db.getuDao();
-            PersonDao pDao = db.getpDao();
-            EventDao eDao = db.geteDao();
+            UserDao userDao = db.getuserDao();
+            PersonDao personDao = db.getpersonDao();
+            EventDao eventDao = db.geteventDao();
 
             User[] users = input.getUsers();
             Person[] persons = input.getPersons();
             Event[] events = input.getEvents();
 
             for(int i = 0; i < users.length; i++) {
-                uDao.insert(users[i]);
+                userDao.insert(users[i]);
             }
 
             for(int i = 0; i < persons.length; i++) {
-                pDao.insert(persons[i]);
+                personDao.insert(persons[i]);
             }
 
             for(int i = 0; i <events.length; i++) {
-                eDao.insert(events[i]);
+                eventDao.insert(events[i]);
             }
 
             db.closeConnection(true);
@@ -53,13 +53,13 @@ public class LoadService {
             loadResult.setNumPersons(persons.length);
             loadResult.setNumEvents(events.length);
 
-        } catch (Database.DatabaseException e) {
+        } catch (DataAccessException e) {
             loadResult.setSuccess(false);
             loadResult.setMessage(e.getMessage());
 
             try {
                 db.closeConnection(false);
-            } catch (Database.DatabaseException d) {
+            } catch (DataAccessException d) {
                 loadResult.setSuccess(false);
                 loadResult.setMessage(d.getMessage());
             }

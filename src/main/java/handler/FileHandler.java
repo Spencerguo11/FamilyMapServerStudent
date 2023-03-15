@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.file.*;
 
-public class FileHandler implements HttpHandler {
+public class FileHandler extends RootHandler {
 
     public FileHandler(){}
 

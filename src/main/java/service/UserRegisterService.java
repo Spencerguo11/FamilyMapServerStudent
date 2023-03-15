@@ -27,42 +27,42 @@ public class UserRegisterService {
             db.openConnection();
 
 
-            UserDao uDao = db.getuDao();
-            PersonDao pDao = db.getpDao();
-            EventDao eDao = db.geteDao();
-            AuthTokenDao aDao = db.getaDao();
+            UserDao userDao = db.getuserDao();
+            PersonDao personDao = db.getpersonDao();
+            EventDao eventDao = db.geteventDao();
+            AuthTokenDao authTokenDao = db.getauthTokenDao();
 
 
 
             User user = new User(input);
-            uDao.insert(user);
+            userDao.insert(user);
 
             Person person = new Person(user);
 
-            pDao.insert(person); //inserts root into database
+            personDao.insert(person); //inserts root into database
 
-            int rootBirthYear = eDao.generateRootEvent(person); //make root's events
+            int rootBirthYear = eventDao.generateRootEvent(person); //make root's events
 
             //Now were going to give generations root, which generates fathers and mothers, then generates fathers and mothers events, and each father and mother is passed on to have its generations made
-            pDao.generateGenerations(person, 4, eDao, rootBirthYear);
+            personDao.generateGenerations(person, 4, eventDao, rootBirthYear);
 
 
             //Auth token stuff
             AuthToken auth = new AuthToken(user);
-            aDao.insert(auth);
+            authTokenDao.insert(auth);
             result = new RegisterResult(auth, user.getPersonID());
             result.setSuccess(true);
 
 
             db.closeConnection(true);
 
-        } catch (Database.DatabaseException e){
+        } catch (DataAccessException e){
             result.setSuccess(false);
             result.setMessage(e.getMessage());
 
             try{
                 db.closeConnection(false);
-            }catch (Database.DatabaseException d){
+            }catch (DataAccessException d){
                 result.setSuccess(false);
                 result.setMessage(d.getMessage());
             }
