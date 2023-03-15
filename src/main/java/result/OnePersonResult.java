@@ -4,7 +4,7 @@ import model.Person;
 
 import java.util.Objects;
 
-public class PersonIDResult {
+public class OnePersonResult {
 
     private String associatedUsername;
     private String personID;
@@ -17,9 +17,9 @@ public class PersonIDResult {
     private Boolean success;
     private String message;
 
-    public PersonIDResult(){}
+    public OnePersonResult(){}
 
-    public PersonIDResult(Person person) {
+    public OnePersonResult(Person person) {
         this.associatedUsername = person.getAssociatedUsername();
         this.personID = person.getPersonID();
         this.firstName = person.getFirstName();
@@ -94,7 +94,7 @@ public class PersonIDResult {
         this.spouseID = spouseID;
     }
 
-    public Boolean getSuccess() {
+    public Boolean isSuccess() {
         return success;
     }
 
@@ -114,7 +114,7 @@ public class PersonIDResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PersonIDResult idResult = (PersonIDResult) o;
+        OnePersonResult idResult = (OnePersonResult) o;
         return associatedUsername.equals(idResult.associatedUsername) && personID.equals(idResult.personID) && firstName.equals(idResult.firstName) && lastName.equals(idResult.lastName) && gender.equals(idResult.gender) && fatherID.equals(idResult.fatherID) && motherID.equals(idResult.motherID) && spouseID.equals(idResult.spouseID) && Objects.equals(success, idResult.success) && Objects.equals(message, idResult.message);
     }
 

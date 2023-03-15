@@ -23,7 +23,7 @@ public class PersonResult {
         this.data = data;
     }
 
-    public Boolean getSuccess() {
+    public Boolean isSuccess() {
         return success;
     }
 

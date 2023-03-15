@@ -2,7 +2,7 @@ package service;
 
 import dataaccess.*;
 import model.*;
-import result.PersonIDResult;
+import result.OnePersonResult;
 
 public class PersonIDService {
 
@@ -16,8 +16,8 @@ public class PersonIDService {
         db = new Database();
     }
 
-    public PersonIDResult personID(String personID, String authtoken){
-        PersonIDResult idResult = new PersonIDResult();
+    public OnePersonResult personID(String personID, String authtoken){
+        OnePersonResult idResult = new OnePersonResult();
 
         try{
             db.openConnection();
@@ -35,7 +35,7 @@ public class PersonIDService {
                 }
                 if (personDao.find(personID)){
                     Person out = personDao.selectSinglePerson(personID);
-                    idResult = new PersonIDResult(out);
+                    idResult = new OnePersonResult(out);
                 }
 
             }

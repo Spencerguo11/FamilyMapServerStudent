@@ -30,7 +30,7 @@ public class RegisterHandler extends RootHandler  {
 
                 myRegisterResult = myRegisterService.register(myRegisterRequest);
 
-                if (myRegisterResult.getSuccess()) {
+                if (myRegisterResult.isSuccess()) {
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
                     Gson gson2 = new Gson();
                     String jsonString = gson2.toJson(myRegisterResult);

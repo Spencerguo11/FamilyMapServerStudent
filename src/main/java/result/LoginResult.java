@@ -46,7 +46,7 @@ public class LoginResult {
         this.personID = personID;
     }
 
-    public Boolean getSuccess() {
+    public Boolean isSuccess() {
         return success;
     }
 

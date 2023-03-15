@@ -4,7 +4,7 @@ import model.Event;
 
 import java.util.Objects;
 
-public class EventIDResult {
+public class OneEventResult {
 
     private String associatedUsername;
     private String eventID;
@@ -18,11 +18,11 @@ public class EventIDResult {
     private Boolean success;
     private String message;
 
-    public EventIDResult(){
+    public OneEventResult(){
 
     }
 
-    public EventIDResult(Event event){
+    public OneEventResult(Event event){
         this.associatedUsername = event.getAssociatedUsername();
         this.eventID = event.getEventID();
         this.personID = event.getPersonID();
@@ -106,7 +106,7 @@ public class EventIDResult {
         this.year = year;
     }
 
-    public Boolean getSuccess() {
+    public Boolean isSuccess() {
         return success;
     }
 
@@ -126,7 +126,7 @@ public class EventIDResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EventIDResult that = (EventIDResult) o;
+        OneEventResult that = (OneEventResult) o;
         return Float.compare(that.latitude, latitude) == 0 && Float.compare(that.longitude, longitude) == 0 && year == that.year && associatedUsername.equals(that.associatedUsername) && eventID.equals(that.eventID) && personID.equals(that.personID) && country.equals(that.country) && city.equals(that.city) && eventType.equals(that.eventType) && Objects.equals(success, that.success) && Objects.equals(message, that.message);
     }
 

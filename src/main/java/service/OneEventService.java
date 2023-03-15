@@ -2,9 +2,9 @@ package service;
 
 import dataaccess.*;
 import model.*;
-import result.EventIDResult;
+import result.OneEventResult;
 
-public class EventIDService {
+public class OneEventService {
 
     /**
      * current user is determined by the provided authtoken
@@ -12,13 +12,13 @@ public class EventIDService {
      */
     private Database db;
 
-    public EventIDService(){
+    public OneEventService(){
         db = new Database();
     }
 
-    public EventIDResult eventID(String eventID, String authtoken){
+    public OneEventResult eventID(String eventID, String authtoken){
 
-        EventIDResult result = new EventIDResult();
+        OneEventResult result = new OneEventResult();
 
         try{
             db.openConnection();
@@ -35,7 +35,7 @@ public class EventIDService {
                         throw new DataAccessException("error finding username");
                     }
 
-                    result = new EventIDResult(event);
+                    result = new OneEventResult(event);
                 }
             }
 

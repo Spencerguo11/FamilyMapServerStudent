@@ -3,16 +3,16 @@ package handler;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import result.EventIDResult;
+import result.OneEventResult;
 import result.EventResult;
-import service.EventIDService;
+import service.OneEventService;
 import service.EventService;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.util.Arrays;
 
 public class EventHandler extends RootHandler  {
 
@@ -20,11 +20,8 @@ public class EventHandler extends RootHandler  {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        EventIDResult myEventIDResult = new EventIDResult();
+        OneEventResult myOneEventResult = new OneEventResult();
         EventResult myEventResult = new EventResult();
-
-        boolean success = false;
-
         try {
             if (exchange.getRequestMethod().toLowerCase().equals("get")) {
 
@@ -34,53 +31,38 @@ public class EventHandler extends RootHandler  {
 
                     String authToken = reqHeaders.getFirst("Authorization");
 
-                    String requestedURL = exchange.getRequestURI().toString();
-                    StringBuilder url = new StringBuilder(requestedURL);
-                    url.deleteCharAt(0);
+                    URI requestURI = exchange.getRequestURI();
+                    String path = requestURI.getPath();
+                    String[] parts = path.split("/");
+                    String[] modifiedArray = Arrays.copyOfRange(parts, 1, parts.length);
+                    parts = modifiedArray;
 
-                    String [] arguments = url.toString().split("/");
+                    if(parts.length == 2) {
+                        OneEventService myIDService = new OneEventService();
+                        myOneEventResult = myIDService.eventID(parts[1], authToken);
 
-                    if(arguments.length > 2 || arguments.length <1){
-                        myEventIDResult.setSuccess(false);
-                        myEventIDResult.setMessage("Invalid number of arguments");
-                        myEventResult.setSuccess(false);
-                        myEventResult.setMessage("Bad Request");
-
-                        exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-                        String jsonStr = new String("{\"message\" : \"" + myEventIDResult.getMessage() + "\"}");
-                        OutputStream respBody = exchange.getResponseBody();
-                        writeString(jsonStr, respBody);
-                        respBody.close();
-                    }
-
-                    else if(arguments.length == 2) {
-                        EventIDService myIDService = new EventIDService();
-                        myEventIDResult = myIDService.eventID(arguments[1], authToken);
-
-                        if(myEventIDResult.getSuccess()){
+                        if(myOneEventResult.isSuccess()){
                             exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
                             Gson gson = new Gson();
-                            String jsonStr = gson.toJson(myEventIDResult);
+                            String jsonStr = gson.toJson(myOneEventResult);
                             OutputStream respBody = exchange.getResponseBody();
                             writeString(jsonStr, respBody);
                             respBody.close();
                         } else {
                             exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-                            String jsonStr = new String("{\"message\" : \"" + myEventIDResult.getMessage() + "\"}");
+                            String jsonStr = new String("{\"message\" : \"" + myOneEventResult.getMessage() + "\"}");
                             OutputStream respBody = exchange.getResponseBody();
                             writeString(jsonStr, respBody);
                             respBody.close();
                         }
-                    }
-
-                    else if(arguments.length == 1) {
+                    } else  {
                         EventService myEventService = new EventService();
-                        EventResult out = myEventService.event(authToken);
-                        myEventResult.setData(out.getData());
-                        myEventResult.setSuccess(out.getSuccess());
-                        myEventResult.setMessage(out.getMessage());
+                        EventResult eventResult = myEventService.event(authToken);
+                        myEventResult.setData(eventResult.getData());
+                        myEventResult.setSuccess(eventResult.isSuccess());
+                        myEventResult.setMessage(eventResult.getMessage());
 
-                        if(myEventResult.getSuccess()){
+                        if(myEventResult.isSuccess()){
                             exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
                             Gson gson = new Gson();
                             String jsonStr = gson.toJson(myEventResult);
@@ -100,7 +82,7 @@ public class EventHandler extends RootHandler  {
         }
         catch (IOException e) {
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-            String jsonStr = new String("{\"message\" : \"Internal server error\"}");
+            String jsonStr = new String("{\"message\" : \"Server ERROR\"}");
             OutputStream respBody = exchange.getResponseBody();
             writeString(jsonStr, respBody);
             respBody.close();

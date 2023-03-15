@@ -23,7 +23,7 @@ public class EventResult {
         this.data = data;
     }
 
-    public Boolean getSuccess() {
+    public Boolean isSuccess() {
         return success;
     }
 

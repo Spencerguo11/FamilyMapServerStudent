@@ -15,34 +15,17 @@ public class ClearHandler extends RootHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-
-        boolean success = false;
+        ClearService myClearService = new ClearService();
 
         try {
             if (exchange.getRequestMethod().toLowerCase().equals("post")) {
-
-                ClearService myClearService = new ClearService();
-
                 ClearResult myClearResult = myClearService.clear();
-
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-
                 Gson gson = new Gson();
-
                 String jsonStr = gson.toJson(myClearResult);
                 OutputStream respBody = exchange.getResponseBody();
                 writeString(jsonStr, respBody);
-
                 respBody.close();
-
-
-                success = true;
-
-
-                if(!success) {
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-                    exchange.getResponseBody().close();
-                }
             }
         }
         catch (IOException e){

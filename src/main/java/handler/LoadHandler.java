@@ -29,7 +29,7 @@ public class LoadHandler extends RootHandler  {
 
                 myLoadResult = myLoadService.load(myLoadRequest);
 
-                if (myLoadResult.getSuccess()) {
+                if (myLoadResult.isSuccess()) {
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
                     String jsonStr = "{\"message\" :\"Successfully added " + myLoadResult.getNumUsers() + " users, "
                             + myLoadResult.getNumPersons() + " persons, and " +myLoadResult.getNumEvents() + " events to the database.\"}";

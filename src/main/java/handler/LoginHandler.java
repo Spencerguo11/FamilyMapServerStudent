@@ -24,7 +24,7 @@ public class LoginHandler extends RootHandler  {
                 LoginRequest myLoginRequest = gson.fromJson(reader, LoginRequest.class);
                 myLoginResult = myLoginService.login(myLoginRequest);
 
-                if (myLoginResult.getSuccess()) {
+                if (myLoginResult.isSuccess()) {
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
                     Gson gson2 = new Gson();
                     String jsonStr = gson2.toJson(myLoginResult);
