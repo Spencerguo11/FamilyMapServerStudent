@@ -8,32 +8,25 @@ import result.LoadResult;
 
 public class LoadService {
 
-    /**
-     * clears all data from database
-     * loads data from LoadRequest input into the database
-     * @param input
-     * @return
-     */
-
-    private Database db;
+    private Database database;
 
     public LoadService() {
-        db = new Database();
+        database = new Database();
     }
 
-    public LoadResult load(LoadRequest input){
+    public LoadResult load(LoadRequest loadRequest) throws DataAccessException {
         LoadResult loadResult = new LoadResult();
         try {
-            db.openConnection();
-            db.clearAll();
+            database.openConnection();
+            database.clearAll();
 
-            UserDao userDao = db.getuserDao();
-            PersonDao personDao = db.getpersonDao();
-            EventDao eventDao = db.geteventDao();
+            UserDao userDao = database.getuserDao();
+            PersonDao personDao = database.getpersonDao();
+            EventDao eventDao = database.geteventDao();
 
-            User[] users = input.getUsers();
-            Person[] persons = input.getPersons();
-            Event[] events = input.getEvents();
+            User[] users = loadRequest.getUsers();
+            Person[] persons = loadRequest.getPersons();
+            Event[] events = loadRequest.getEvents();
 
             for(int i = 0; i < users.length; i++) {
                 userDao.insert(users[i]);
@@ -43,11 +36,11 @@ public class LoadService {
                 personDao.insert(persons[i]);
             }
 
-            for(int i = 0; i <events.length; i++) {
+            for(int i = 0; i < events.length; i++) {
                 eventDao.insert(events[i]);
             }
 
-            db.closeConnection(true);
+            database.closeConnection(true);
             loadResult.setSuccess(true);
             loadResult.setNumUsers(users.length);
             loadResult.setNumPersons(persons.length);
@@ -56,13 +49,7 @@ public class LoadService {
         } catch (DataAccessException e) {
             loadResult.setSuccess(false);
             loadResult.setMessage(e.getMessage());
-
-            try {
-                db.closeConnection(false);
-            } catch (DataAccessException d) {
-                loadResult.setSuccess(false);
-                loadResult.setMessage(d.getMessage());
-            }
+            database.closeConnection(false);
         }
         return loadResult;
     }

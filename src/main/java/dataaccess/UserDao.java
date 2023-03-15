@@ -95,7 +95,7 @@ public class UserDao {
         }
     }
 
-    public boolean ExistingUsernamePassword(User user) throws DataAccessException {
+    public boolean validateUsernamePassword(User user) throws DataAccessException {
         String sql = "select * from User WHERE username = '" + user.getUsername() + "' AND password = '" + user.getPassword() + "'";
          try(PreparedStatement stmt = conn.prepareStatement(sql)){
 

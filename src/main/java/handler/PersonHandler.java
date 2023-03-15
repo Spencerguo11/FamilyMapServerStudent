@@ -6,12 +6,14 @@ import com.sun.net.httpserver.HttpExchange;
 import dataaccess.DataAccessException;
 import result.OnePersonResult;
 import result.PersonResult;
-import service.PersonIDService;
+import service.OnePersonService;
 import service.PersonService;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.util.Arrays;
 
 public class PersonHandler extends RootHandler {
 
@@ -20,7 +22,7 @@ public class PersonHandler extends RootHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         OnePersonResult myOnePersonResult = new OnePersonResult();
-        PersonResult myPersonResult = new PersonResult();
+        PersonResult personResult = new PersonResult();
 
         try {
             if (exchange.getRequestMethod().toLowerCase().equals("get")) {
@@ -29,13 +31,13 @@ public class PersonHandler extends RootHandler {
                 if (reqHeaders.containsKey("Authorization")) {
                     String authToken = reqHeaders.getFirst("Authorization");
 
-                    String requestedURL = exchange.getRequestURI().toString();
-                    StringBuilder url = new StringBuilder(requestedURL);
-                    url.deleteCharAt(0);
+                    URI requestURI = exchange.getRequestURI();
+                    String path = requestURI.getPath();
+                    String[] parts = path.split("/");
+                    String[] modifiedArray = Arrays.copyOfRange(parts, 1, parts.length);
+                    parts = modifiedArray;
 
-                    String[] arguments = url.toString().split("/");
-
-                    if(arguments.length < 1 || arguments.length > 2) {
+                    if(parts.length < 1 || parts.length > 2) {
                         myOnePersonResult.setSuccess(false);
                         myOnePersonResult.setMessage("Invalid number of arguments");
 
@@ -46,12 +48,12 @@ public class PersonHandler extends RootHandler {
                         respBody.close();
                     }
 
-                    else if(arguments.length == 2) {
-                        PersonIDService myIDService = new PersonIDService();
-                        myOnePersonResult = myIDService.personID(arguments[1], authToken);
+                    else if(parts.length == 2) {
+                        OnePersonService myIDService = new OnePersonService();
+                        myOnePersonResult = myIDService.getOnePerson(parts[1], authToken);
 
-                        myPersonResult.setSuccess(myOnePersonResult.isSuccess());
-                        myPersonResult.setMessage(myOnePersonResult.getMessage());
+                        personResult.setSuccess(myOnePersonResult.isSuccess());
+                        personResult.setMessage(myOnePersonResult.getMessage());
 
                         if(myOnePersonResult.isSuccess()) {
                             exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);
@@ -69,32 +71,19 @@ public class PersonHandler extends RootHandler {
                         }
                     }
 
-                    else if(arguments.length == 1) {
+                    else if(parts.length == 1) {
                         PersonService myPersonService = new PersonService();
-                        PersonResult out = myPersonService.person(authToken);
+                        PersonResult result = myPersonService.person(authToken);
 
-                        if(!out.isSuccess()) {
-                            throw new DataAccessException(out.getMessage());
+                        if(!result.isSuccess()) {
+                            throw new DataAccessException(result.getMessage());
                         }
 
-                        myPersonResult.setSuccess(out.isSuccess());
-                        myPersonResult.setMessage(out.getMessage());
-                        myPersonResult.setData(out.getData());
+                        personResult.setSuccess(result.isSuccess());
+                        personResult.setMessage(result.getMessage());
+                        personResult.setData(result.getData());
 
-                        if(myPersonResult.isSuccess()) {
-                            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);
-                            Gson gson = new Gson();
-                            String jsonStr = gson.toJson(myPersonResult);
-                            OutputStream respBody = exchange.getResponseBody();
-                            writeString(jsonStr, respBody);
-                            respBody.close();
-                        } else {
-                            exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-                            String jsonStr = new String("{\"message\" : \"" + myPersonResult.getMessage() + "\"}");
-                            OutputStream respBody = exchange.getResponseBody();
-                            writeString(jsonStr, respBody);
-                            respBody.close();
-                        }
+                        checkSuccess(exchange, personResult);
                     }
                 }
             }
@@ -114,6 +103,23 @@ public class PersonHandler extends RootHandler {
             respBody.close();
 
             e.printStackTrace();
+        }
+    }
+
+    private void checkSuccess(HttpExchange exchange, PersonResult personResult) throws IOException{
+        if(personResult.isSuccess()) {
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);
+            Gson gson = new Gson();
+            String jsonStr = gson.toJson(personResult);
+            OutputStream respBody = exchange.getResponseBody();
+            writeString(jsonStr, respBody);
+            respBody.close();
+        } else {
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+            String jsonStr = new String("{\"message\" : \"" + personResult.getMessage() + "\"}");
+            OutputStream respBody = exchange.getResponseBody();
+            writeString(jsonStr, respBody);
+            respBody.close();
         }
     }
 

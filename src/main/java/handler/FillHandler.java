@@ -2,6 +2,7 @@ package handler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import dataaccess.DataAccessException;
 import result.FillResult;
 import service.FillService;
 
@@ -52,6 +53,8 @@ public class FillHandler extends RootHandler {
             writeString(jsonStr, respBody);
             respBody.close();
 
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -16,56 +16,39 @@ public class UserRegisterService {
      * @return authtoken
      */
 
-    private Database db;
+    private Database database;
 
-    public UserRegisterService(){db = new Database();}
+    public UserRegisterService(){database = new Database();}
 
-    public RegisterResult register(RegisterRequest input){
+    public RegisterResult register(RegisterRequest input) throws DataAccessException {
         RegisterResult result = new RegisterResult();
 
         try{
-            db.openConnection();
-
-
-            UserDao userDao = db.getuserDao();
-            PersonDao personDao = db.getpersonDao();
-            EventDao eventDao = db.geteventDao();
-            AuthTokenDao authTokenDao = db.getauthTokenDao();
-
-
-
+            database.openConnection();
+            UserDao userDao = database.getuserDao();
+            PersonDao personDao = database.getpersonDao();
+            EventDao eventDao = database.geteventDao();
+            AuthTokenDao authTokenDao = database.getauthTokenDao();
+            
             User user = new User(input);
             userDao.insert(user);
-
             Person person = new Person(user);
+            personDao.insert(person); 
 
-            personDao.insert(person); //inserts root into database
+            int year = eventDao.generateEvents(person);
+            personDao.generateGenerations(person, 4, eventDao, year);
 
-            int rootBirthYear = eventDao.generateRootEvent(person); //make root's events
-
-            //Now were going to give generations root, which generates fathers and mothers, then generates fathers and mothers events, and each father and mother is passed on to have its generations made
-            personDao.generateGenerations(person, 4, eventDao, rootBirthYear);
-
-
-            //Auth token stuff
             AuthToken auth = new AuthToken(user);
             authTokenDao.insert(auth);
             result = new RegisterResult(auth, user.getPersonID());
             result.setSuccess(true);
-
-
-            db.closeConnection(true);
+            database.closeConnection(true);
 
         } catch (DataAccessException e){
             result.setSuccess(false);
             result.setMessage(e.getMessage());
+            database.closeConnection(false);
 
-            try{
-                db.closeConnection(false);
-            }catch (DataAccessException d){
-                result.setSuccess(false);
-                result.setMessage(d.getMessage());
-            }
         }
         return result;
     }

@@ -14,7 +14,7 @@
 ////
 //////We will use this to test that our insert method is working and failing in the right ways
 ////public class EventDAOTest {
-////    private Database db;
+////    private Database database;
 ////    private Event bestEvent;
 ////    private EventDAO eventDao;
 ////
@@ -22,16 +22,16 @@
 ////    public void setUp() throws DataAccessException {
 ////        // Here we can set up any classes or variables we will need for each test
 ////        // lets create a new instance of the Database class
-////        db = new Database();
+////        database = new Database();
 ////        // and a new event with random data
 ////        bestEvent = new Event("Biking_123A", "Gale", "Gale123A",
 ////                35.9f, 140.1f, "Japan", "Ushiku",
 ////                "Biking_Around", 2016);
 ////
 ////        // Here, we'll open the connection in preparation for the test case to use it
-////        db.openConnection();
+////        database.openConnection();
 ////        //Then we pass that connection to the EventDAO, so it can access the database.
-////        eventDao = db.getEventDAO();
+////        eventDao = database.getEventDAO();
 ////        //Let's clear the database as well so any lingering data doesn't affect our tests
 ////        eventDao.clear();
 ////    }
@@ -41,7 +41,7 @@
 ////        // Here we close the connection to the database file, so it can be opened again later.
 ////        // We will set commit to false because we do not want to save the changes to the database
 ////        // between test cases.
-////        db.closeConnection(false);
+////        database.closeConnection(false);
 ////    }
 ////
 ////    @Test
@@ -91,22 +91,22 @@
 //
 ////We will use this to test that our insert method is working and failing in the right ways
 //public class EventDaoTest {
-//    private Database db;
+//    private Database database;
 //    private EventDao eDao;
 //
 //    @Before
 //    public void setUp() throws DataAccessException {
-//        db = new Database();
-//        db.openConnection();
-//        db.clearAll();
-//        eDao = db.getuserDao();
+//        database = new Database();
+//        database.openConnection();
+//        database.clearAll();
+//        eDao = database.getuserDao();
 //    }
 //
 //    @After
 //    public void tearDown() throws DataAccessException {
-//        db.closeConnection(false);
+//        database.closeConnection(false);
 //        eDao = null;
-//        db = null;
+//        database = null;
 //    }
 //
 //    @Test
@@ -190,7 +190,7 @@
 //            assertNotEquals(expectedNumEvents, eventsPreliminary.length);
 //            assertNotEquals(birthYear,1960);
 //
-//            birthYear = eDao.generateRootEvent(testPerson1);
+//            birthYear = eDao.generateEvents(testPerson1);
 //
 //            String eventTable = eDao.tableToString();
 //            String[] events = eventTable.split("\n");
@@ -204,7 +204,7 @@
 //    }
 //
 //    @Test
-//    public void testGenerateEventDataParents(){
+//    public void testgenerateParentsEvent(){
 //        try{
 //            User testUser1 = new User(); //person 1
 //            testUser1.setUsername("angieyxy");
@@ -233,22 +233,22 @@
 //            testPerson2.setMotherID("Rebecca");
 //
 //            int expectedNumEvents = 8;
-//            int exptectedBirthDateOfParents = 1934;
+//            int exptectedatabaseirthDateOfParents = 1934;
 //            int actualBirthYearOfParents = 0;
 //
 //            String eventsOutput = eDao.tableToString();
 //            String[] eventsArray = eventsOutput.split("\n");
 //
 //            assertNotEquals(expectedNumEvents, eventsArray.length);
-//            assertNotEquals(exptectedBirthDateOfParents, actualBirthYearOfParents);
+//            assertNotEquals(exptectedatabaseirthDateOfParents, actualBirthYearOfParents);
 //
-//            actualBirthYearOfParents = eDao.generateEventDataParents(testPerson2,testPerson1,1960);
+//            actualBirthYearOfParents = eDao.generateParentsEvent(testPerson2,testPerson1,1960);
 //
 //            eventsOutput = eDao.tableToString();
 //            String[] outputArray = eventsOutput.split("\n");
 //
 //            assertEquals(expectedNumEvents, outputArray.length);
-//            assertEquals(exptectedBirthDateOfParents, actualBirthYearOfParents);
+//            assertEquals(exptectedatabaseirthDateOfParents, actualBirthYearOfParents);
 //
 //
 //        } catch (DataAccessException e){

@@ -10,10 +10,10 @@ public class EventService {
      * @return All events for All family members of current user
      */
 
-    private Database db;
+    private Database database;
 
     public EventService() {
-        db = new Database();
+        database = new Database();
     }
 
     public EventResult event(String authtoken){
@@ -21,20 +21,20 @@ public class EventService {
 
         try{
 
-            db.openConnection();
-            EventDao eventDao = db.geteventDao();
-            AuthTokenDao authTokenDao = db.getauthTokenDao();
+            database.openConnection();
+            EventDao eventDao = database.geteventDao();
+            AuthTokenDao authTokenDao = database.getauthTokenDao();
 
 
-            if(authTokenDao.validAuthToken(authtoken)){
+            if(authTokenDao.validate(authtoken)){
                 AuthToken auth = authTokenDao.getAuthToken(authtoken);
                 result.setData(eventDao.selectAllEvents(auth.getUsername()));
-                db.closeConnection(true);
+                database.closeConnection(true);
                 result.setSuccess(true);
             } else {
                 result.setSuccess(false);
                 result.setMessage("{\"message\" : \" internal server error\"}");
-                db.closeConnection(false);
+                database.closeConnection(false);
             }
 
 
@@ -44,7 +44,7 @@ public class EventService {
             result.setMessage(e.getMessage());
 
             try{
-                db.closeConnection(false);
+                database.closeConnection(false);
             }catch (DataAccessException d){
                 result.setSuccess(false);
                 result.setMessage(e.getMessage());

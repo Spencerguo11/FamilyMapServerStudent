@@ -10,24 +10,24 @@ public class OneEventService {
      * current user is determined by the provided authtoken
      * @return Event object with specified ID
      */
-    private Database db;
+    private Database database;
 
     public OneEventService(){
-        db = new Database();
+        database = new Database();
     }
 
-    public OneEventResult eventID(String eventID, String authtoken){
+    public OneEventResult eventID(String eventID, String authtoken) throws DataAccessException {
 
         OneEventResult result = new OneEventResult();
 
         try{
-            db.openConnection();
+            database.openConnection();
 
-            EventDao eventDao = db.geteventDao();
-            AuthTokenDao authTokenDao = db.getauthTokenDao();
+            EventDao eventDao = database.geteventDao();
+            AuthTokenDao authTokenDao = database.getauthTokenDao();
 
 
-            if(authTokenDao.validAuthToken(authtoken)){
+            if(authTokenDao.validate(authtoken)){
                 AuthToken auth = authTokenDao.getAuthToken(authtoken);
                 if (eventDao.find(eventID)){
                     Event event = eventDao.selectSingleEvent(eventID);
@@ -39,18 +39,13 @@ public class OneEventService {
                 }
             }
 
-            db.closeConnection(true);
+            database.closeConnection(true);
             result.setSuccess(true);
 
         } catch (DataAccessException e){
             result.setSuccess(false);
             result.setMessage(e.getMessage());
-            try{
-                db.closeConnection(false);
-            }catch (DataAccessException d){
-                result.setSuccess(false);
-                result.setMessage(d.getMessage());
-            }
+            database.closeConnection(false);
         }
         return result;
     }

@@ -11,46 +11,32 @@ import result.LoginResult;
 
 public class UserLoginService {
 
+    private Database database;
 
-    /**
-     * logs returning user in using LoginRequest
-     * @param input
-     * @return authtoken
-     */
+    public UserLoginService () {database = new Database();}
 
-    private Database db;
-
-    public UserLoginService () {db = new Database();}
-
-    public LoginResult login(LoginRequest input) {
+    public LoginResult login(LoginRequest input) throws DataAccessException {
         LoginResult loginResult = new LoginResult();
-        UserDao userDao = db.getuserDao();
-        AuthTokenDao authTokenDao = db.getauthTokenDao();
+        UserDao userDao = database.getuserDao();
+        AuthTokenDao authTokenDao = database.getauthTokenDao();
 
         try{
-            db.openConnection();
+            database.openConnection();
             User user = new User(input);
 
-            if (userDao.ExistingUsernamePassword(user)) { //yes, the username and password are valid
+            if (userDao.validateUsernamePassword(user)) {
                 AuthToken returnAuth = new AuthToken(user);
-
                 authTokenDao.insert(returnAuth);
-
                 loginResult = new LoginResult(returnAuth, userDao.getPersonIDOfUser(user));
                 loginResult.setSuccess(true);
-
-                db.closeConnection(true);
+                database.closeConnection(true);
             }
 
         } catch ( DataAccessException d){
             loginResult.setMessage(d.getMessage());
             loginResult.setSuccess(false);
-            try{
-                db.closeConnection(false);
-            }catch (DataAccessException e){
-                loginResult.setSuccess(false);
-                loginResult.setMessage(e.getMessage());
-            }
+            database.closeConnection(false);
+
         }
         return loginResult;
     }

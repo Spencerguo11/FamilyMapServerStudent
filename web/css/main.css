@@ -299,7 +299,7 @@ textarea {
     p,
     h2,
     h3 {
-        orphans: 3;
+        rootPersons: 3;
         widows: 3;
     }
 

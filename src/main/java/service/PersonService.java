@@ -7,46 +7,34 @@ import result.PersonResult;
 
 public class PersonService {
 
-
-    /**
-     * current user determined by provided authtoken
-     * @return All family members of current user
-     */
-
-    private Database db;
+    private Database database;
 
     public PersonService() {
-        db = new Database();
+        database = new Database();
     }
 
-    public PersonResult person(String authtoken){
+    public PersonResult person(String authtoken) throws DataAccessException {
         PersonResult personResult = new PersonResult();
 
         try{
-            db.openConnection();
-            PersonDao personDao = db.getpersonDao();
-            AuthTokenDao authTokenDao = db.getauthTokenDao();
+            database.openConnection();
+            PersonDao personDao = database.getpersonDao();
+            AuthTokenDao authTokenDao = database.getauthTokenDao();
 
 
-            if(authTokenDao.validAuthToken(authtoken)){
+            if(authTokenDao.validate(authtoken)){
                 AuthToken auth = authTokenDao.getAuthToken(authtoken);
-                personResult.setData(personDao.selectAllPersons(auth.getUsername()));
+                personResult.setData(personDao.getAllPerson(auth.getUsername()));
             }
 
-            db.closeConnection(true);
+            database.closeConnection(true);
             personResult.setSuccess(true);
 
         } catch (DataAccessException e){
             personResult.setSuccess(false);
             personResult.setMessage("{\"message\" : \" internal server error\"}");
             personResult.setMessage(e.getMessage());
-            try{
-                db.closeConnection(false);
-            }catch (DataAccessException d){
-                personResult.setSuccess(false);
-                personResult.setMessage("{\"message\" : \" internal server error\"}");
-                personResult.setMessage(d.getMessage());
-            }
+            database.closeConnection(false);
         }
 
         return personResult;

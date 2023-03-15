@@ -6,50 +6,34 @@ import result.EventResult;
 
 public class EventService {
 
-    /**
-     * current user is determined by the provided authtoken
-     * @return All events for All family members of current user
-     */
-
-    private Database db;
+    private Database database;
 
     public EventService() {
-        db = new Database();
+        database = new Database();
     }
 
-    public EventResult event(String authtoken){
+    public EventResult event(String authtoken) throws DataAccessException {
         EventResult result = new EventResult();
 
         try{
-
-            db.openConnection();
-            EventDao eventDao = db.geteventDao();
-            AuthTokenDao authTokenDao = db.getauthTokenDao();
-
-
-            if(authTokenDao.validAuthToken(authtoken)){
+            database.openConnection();
+            EventDao eventDao = database.geteventDao();
+            AuthTokenDao authTokenDao = database.getauthTokenDao();
+            if(authTokenDao.validate(authtoken)){
                 AuthToken auth = authTokenDao.getAuthToken(authtoken);
                 result.setData(eventDao.selectAllEvents(auth.getUsername()));
-                db.closeConnection(true);
+                database.closeConnection(true);
                 result.setSuccess(true);
             } else {
                 result.setSuccess(false);
-                result.setMessage("{\"message\" : \" internal server error\"}");
-                db.closeConnection(false);
+                result.setMessage("{\"message\" : \" server error\"}");
+                database.closeConnection(false);
             }
-
-
 
         } catch (DataAccessException e){
             result.setSuccess(false);
             result.setMessage(e.getMessage());
-
-            try{
-                db.closeConnection(false);
-            }catch (DataAccessException d){
-                result.setSuccess(false);
-                result.setMessage(e.getMessage());
-            }
+            database.closeConnection(false);
         }
 
         return result;

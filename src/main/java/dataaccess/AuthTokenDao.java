@@ -41,7 +41,7 @@ public class AuthTokenDao {
      * @return
      * @throws DataAccessException
      */
-    public boolean validAuthToken(String authtoken) throws DataAccessException {
+    public boolean validate(String authtoken) throws DataAccessException {
         String sql = "select * from Authtoken WHERE authtoken = '" + authtoken + "'";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = null;

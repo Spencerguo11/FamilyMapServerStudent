@@ -3,6 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import dataaccess.DataAccessException;
 import request.LoadRequest;
 import result.LoadResult;
 import service.LoadService;
@@ -16,7 +17,7 @@ public class LoadHandler extends RootHandler  {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        LoadResult myLoadResult = new LoadResult();
+        LoadResult loadResult = new LoadResult();
 
         try {
             if (exchange.getRequestMethod().toLowerCase().equals("post")) {
@@ -27,22 +28,10 @@ public class LoadHandler extends RootHandler  {
                 Gson gson = new Gson();
                 LoadRequest myLoadRequest = gson.fromJson(reader, LoadRequest.class);
 
-                myLoadResult = myLoadService.load(myLoadRequest);
+                loadResult = myLoadService.load(myLoadRequest);
 
-                if (myLoadResult.isSuccess()) {
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-                    String jsonStr = "{\"message\" :\"Successfully added " + myLoadResult.getNumUsers() + " users, "
-                            + myLoadResult.getNumPersons() + " persons, and " +myLoadResult.getNumEvents() + " events to the database.\"}";
-                    OutputStream respBody = exchange.getResponseBody();
-                    writeString(jsonStr, respBody);
-                    respBody.close();
-                } else {
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
-                    String jsonStr = new String("{\"message\" : \"" + myLoadResult.getMessage() + "\"}");
-                    OutputStream respBody = exchange.getResponseBody();
-                    writeString(jsonStr, respBody);
-                    respBody.close();
-                }
+                checkSuccess(exchange, loadResult);
+
             }
         }
         catch (IOException e){
@@ -52,6 +41,25 @@ public class LoadHandler extends RootHandler  {
             writeString(jsonStr, respBody);
             respBody.close();
 
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void checkSuccess(HttpExchange exchange, LoadResult loadResult) throws IOException{
+        if (loadResult.isSuccess()) {
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+            String jsonStr = "{\"message\" :\"Successfully added " + loadResult.getNumUsers() + " users, "
+                    + loadResult.getNumPersons() + " persons, and " +loadResult.getNumEvents() + " events to the database.\"}";
+            OutputStream respBody = exchange.getResponseBody();
+            writeString(jsonStr, respBody);
+            respBody.close();
+        } else {
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+            String jsonStr = new String("{\"message\" : \"" + loadResult.getMessage() + "\"}");
+            OutputStream respBody = exchange.getResponseBody();
+            writeString(jsonStr, respBody);
+            respBody.close();
         }
     }
 

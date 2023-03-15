@@ -14,14 +14,14 @@
 //
 ////We will use this to test that our insert method is working and failing in the right ways
 //public class UserDAOTest {
-//    private Database db;
+//    private Database database;
 //    private User bestUser;
 //    private UserDAO userDao;
 //
 //    @BeforeEach
 //    public void setUp() throws DataAccessException {
 //
-//        db = new Database();
+//        database = new Database();
 //
 //        bestUser = new User("JJ", "123", "JJ@byu.edu", "Jay", "Lin",
 //                "m", "5");
@@ -35,7 +35,7 @@
 //    @AfterEach
 //    public void tearDown() throws DataAccessException {
 //
-//        db.closeConnection(false);
+//        database.closeConnection(false);
 //    }
 //
 //    @Test

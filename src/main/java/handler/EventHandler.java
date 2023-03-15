@@ -3,6 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
+import dataaccess.DataAccessException;
 import result.OneEventResult;
 import result.EventResult;
 import service.OneEventService;
@@ -88,6 +89,8 @@ public class EventHandler extends RootHandler  {
             respBody.close();
 
             e.printStackTrace();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 

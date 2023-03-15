@@ -74,91 +74,21 @@ public class PersonDao {
     }
 
 
-    /**
-     * find person using personID in person table
-     * @param personID
-     * @return
-     * @throws DataAccessException
-     */
-    public boolean find(String personID) throws DataAccessException {
-        String sql = "select * from Person WHERE personID = '" + personID + "'";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)){
-
-            ResultSet rs = null;
-
-            rs = stmt.executeQuery();
-
-            if (!rs.next() ) {
-                throw new DataAccessException("error finding personID");
-            } else {
-                return true;
-            }
-
-        }
-        catch (SQLException e) {
-            throw new DataAccessException("error finding personID");
-        }
-    }
-
-
-    public void generateGenerations(Person orphan, int numGenerations, EventDao eventDao, int orphanBirthYear) throws DataAccessException { //recursive, receives person whose parent's need to be generated
-        Person mother = makeMother(orphan);
-        Person father = makeFather(orphan);
+    public void generateGenerations(Person rootPerson, int numGenerations, EventDao eventDao, int rootYear) throws DataAccessException { //recursive, receives person whose parent's need to be generated
+        Person mother = makeParent(rootPerson, "mom");
+        Person father = makeParent(rootPerson, "father");
         updateSpouse(father, mother.getPersonID());
         updateSpouse(mother, father.getPersonID());
 
-        int birthDateOfBoth = eventDao.generateEventDataParents(mother, father, orphanBirthYear);
+        int parentYear = eventDao.generateParentsEvent(mother, father, rootYear);
 
         numGenerations--;
         if (numGenerations > 0){
-            generateGenerations(mother, numGenerations, eventDao, birthDateOfBoth);
-            generateGenerations(father, numGenerations,eventDao, birthDateOfBoth);
+            generateGenerations(mother, numGenerations, eventDao, parentYear);
+            generateGenerations(father, numGenerations,eventDao, parentYear);
         }
     }
 
-    public void updateMother(Person p, String motherID) throws DataAccessException{
-        try {
-            Statement stmt = null;
-            try {
-
-                String sql = "UPDATE Person\n" +
-                        "SET motherID = '" + motherID + "' " +
-                        "WHERE personID = '" + p.getPersonID() + "'";
-                stmt = conn.createStatement();
-                stmt.executeUpdate(sql);
-            }
-            finally {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
-        }
-        catch (SQLException e) {
-            throw new DataAccessException("error updating mother");
-        }
-    }
-
-    public void updateFather(Person p, String fatherID) throws DataAccessException{
-        try {
-            Statement stmt = null;
-            try {
-
-                String sql = "UPDATE Person\n" +
-                        "SET fatherID = '" + fatherID + "' " +
-                        "WHERE personID = '" + p.getPersonID() + "'";
-                stmt = conn.createStatement();
-                stmt.executeUpdate(sql);
-            }
-            finally {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
-        }
-        catch (SQLException e) {
-            throw new DataAccessException("error updating father");
-        }
-    }
 
     public void updateSpouse(Person person, String spouseID) throws DataAccessException{
         try {
@@ -182,59 +112,82 @@ public class PersonDao {
         }
     }
 
-    public Person makeMother(Person orphan) throws DataAccessException {
+    private Person makeParent(Person person, String parentType) throws DataAccessException {
+        if (parentType.equals("mom")) {
+            Random rand = new Random();
+            int r = rand.nextInt(147);
 
-        Random rand = new Random();
-        int r = rand.nextInt(146);
-
-        String motherID = UUID.randomUUID().toString();
-        String personOfMother = orphan.getAssociatedUsername();
-        String motherFirstName = femaleNames[r];
-        r = rand.nextInt(149);
-        String motherLastName = lastNames[r];
-        String gender = "f";
-
-        updateMother(orphan, motherID);
+            String motherID = UUID.randomUUID().toString();
+            String associatedUsernameOfmother = person.getAssociatedUsername();
+            String motherFirstName = femaleNames[r];
+            r = rand.nextInt(147);
+            String motherLastName = lastNames[r];
 
 
-        Person mother = new Person();
-        mother.setPersonID(motherID);
-        mother.setAssociatedUsername(personOfMother);
-        mother.setFirstName(motherFirstName);
-        mother.setLastName(motherLastName);
-        mother.setGender(gender);
+            //Updates person's mother
+            updateParent(person, motherID, "mother");
+            //Make mother model
+            Person mother = new Person();
+            mother.setPersonID(motherID);
+            mother.setAssociatedUsername(associatedUsernameOfmother);
+            mother.setFirstName(motherFirstName);
+            mother.setLastName(motherLastName);
+            mother.setGender("f");
 
-        insert(mother);
+            insert(mother);
 
-        return mother;
+            return mother;
+        } else {
+
+            Random rand = new Random();
+            int r = rand.nextInt(142);
+
+            String fatherID = UUID.randomUUID().toString();
+            String associatedUsernameOfFather = person.getAssociatedUsername();
+            String fatherFirstName = maleNames[r];
+            r = rand.nextInt(142);
+            String fatherLastName = lastNames[r];
+
+            //Updates person's father
+            updateParent(person, fatherID, "father");
+            //Make father model
+            Person father = new Person();
+            father.setPersonID(fatherID);
+            father.setAssociatedUsername(associatedUsernameOfFather);
+            father.setFirstName(fatherFirstName);
+            father.setLastName(fatherLastName);
+            father.setGender("m");
+
+            insert(father);
+
+            return father;
+
+        }
     }
 
-    public Person makeFather(Person orphan) throws DataAccessException {
-        Random rand = new Random();
-        int r = rand.nextInt(141);
+        private void updateParent(Person person, String parentID, String parentType) throws DataAccessException {
+        try {
+            Statement stmt = null;
+            try {
 
-        String fatherID = UUID.randomUUID().toString();
-        String personOfFather = orphan.getAssociatedUsername();
-        String fatherFirstName = maleNames[r];
-        String fatherLastName = orphan.getLastName();
-        String gender = "m";
-
-        updateFather(orphan, fatherID);
-
-
-        Person father = new Person();
-        father.setPersonID(fatherID);
-        father.setAssociatedUsername(personOfFather);
-        father.setFirstName(fatherFirstName);
-        father.setLastName(fatherLastName);
-        father.setGender(gender);
-
-        insert(father);
-
-        return father;
+                String sql = "UPDATE Person\n" +
+                        "SET " + parentType.toLowerCase() + "ID = '" + parentID + "' " + // modified
+                        "WHERE personID = '" + person.getPersonID() + "'";
+                stmt = conn.createStatement();
+                stmt.executeUpdate(sql);
+            }
+            finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+        }
+        catch (SQLException e) {
+            throw new DataAccessException("error updating parent");
+        }
     }
 
-    public Person[] selectAllPersons(String username) throws DataAccessException{ //person model is user's person representation
+    public Person[] getAllPerson(String username) throws DataAccessException{ //person model is user's person representation
         ArrayList<Person> personList = new ArrayList<Person>();
         String sql = "select * from Person WHERE associatedUsername = '" + username + "'";
         try (PreparedStatement stmt = conn.prepareStatement(sql)){

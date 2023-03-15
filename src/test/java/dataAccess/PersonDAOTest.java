@@ -14,20 +14,20 @@
 //
 ////We will use this to test that our insert method is working and failing in the right ways
 //public class PersonDAOTest {
-//    private Database db;
+//    private Database database;
 //    private Person bestPerson;
 //    private PersonDAO personDao;
 //
 //    @BeforeEach
 //    public void setUp() throws DataAccessException {
 //
-//        db = new Database();
+//        database = new Database();
 //
 //        bestPerson = new Person("User", "123456789", "Kyle", "Kim",
 //                "m", "123", "456", "789");
 //
 //
-//        Connection conn = db.getConnection();
+//        Connection conn = database.getConnection();
 //
 //        personDao = new PersonDAO();
 //
@@ -37,7 +37,7 @@
 //    @AfterEach
 //    public void tearDown() throws DataAccessException {
 //
-//        db.closeConnection(false);
+//        database.closeConnection(false);
 //    }
 //
 //    @Test

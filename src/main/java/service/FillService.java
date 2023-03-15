@@ -8,74 +8,47 @@ import java.util.UUID;
 
 public class FillService {
 
-    /**
-     * populates server's database with generated data for specific username
-     * if data already exists, original data is to be deleted
-     * optional generation parameter to specify number of generations generated
-     * @param username, generations(optional)
-     * @return
-     */
+    private Database database;
 
-    private Database db;
+    public FillService() {database = new Database();}
 
-    public FillService() {db = new Database();}
-
-    public FillResult fill(String username, int generations){
+    public FillResult fill(String username, int gen) throws DataAccessException {
 
         FillResult fillResult = new FillResult();
 
         try{
-            db.openConnection();
-            UserDao userDao = db.getuserDao();
-            EventDao eventDao = db.geteventDao();
-            PersonDao personDao = db.getpersonDao();
-            if (!userDao.find(username)){
-                throw new DataAccessException("username does not exist");
-            }
+            database.openConnection();
+            UserDao userDao = database.getuserDao();
+            EventDao eventDao = database.geteventDao();
+            PersonDao personDao = database.getpersonDao();
 
-            User user = userDao.getUser(username); //user does not have the same personID as the userName user
+            User user = userDao.getUser(username);
             user.setPersonID(UUID.randomUUID().toString());
+            database.removeUser(user);
+            userDao.insert(user);
+            Person defaultPerson = new Person(user);
+            personDao.insert(defaultPerson);
 
+            int year = eventDao.generateEvents(defaultPerson);
 
-            db.removeUser(user); //deletes all things of user, including the user
-
-            userDao.insert(user); //inserts same user but with new personID into the database
-
-            Person root = new Person(user);  //creates a person representation of the user
-
-            personDao.insert(root); //inserts root into database
-
-            int rootBirthYear = eventDao.generateRootEvent(root); //make root's events
-
-            //Now were going to give generateGenerations root, which generates fathers and mothers, then generates fathers and mothers events, and each father and mother is passed on to have its generations made
-
-            if (generations == -1){//default case
-                personDao.generateGenerations(root, 4, eventDao, rootBirthYear); //default is four generations
-                fillResult.setPersons(31);
-                fillResult.setEvents(124);
+            if (gen == -1){
+                personDao.generateGenerations(defaultPerson, 4, eventDao, year);
+                fillResult.setPersons(31); // 4 generation
+                fillResult.setEvents(124); // 4 generations
                 fillResult.setSuccess(true);
             } else {
-                personDao.generateGenerations(root, generations, eventDao, rootBirthYear);
-                double numG = (double) generations;
-                double answer = (Math.pow(2.0, (numG + 1.0)) - 1.0);
-                int finalAnswer = (int) answer;
-                fillResult.setPersons(finalAnswer);
-                fillResult.setEvents(finalAnswer * 4);
+                personDao.generateGenerations(defaultPerson, gen, eventDao, year);
+                fillResult.setPersons((int) (Math.pow(2.0, (gen + 1.0)) - 1.0));
+                fillResult.setEvents((int) (Math.pow(2.0, (gen + 1.0)) - 1.0) * 4);
                 fillResult.setSuccess(true);
             }
 
-            db.closeConnection(true);
+            database.closeConnection(true);
 
-        } catch (DataAccessException e){
+        } catch (DataAccessException e) {
             fillResult.setSuccess(false);
             fillResult.setMessage(e.getMessage());
-
-            try{
-                db.closeConnection(false);
-            }catch (DataAccessException d){
-                fillResult.setSuccess(false);
-                fillResult.setMessage(d.getMessage());
-            }
+            database.closeConnection(false);
         }
         return fillResult;
     }

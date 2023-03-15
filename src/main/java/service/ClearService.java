@@ -5,38 +5,23 @@ import result.ClearResult;
 
 public class ClearService {
 
-    /**
-     * Deletes all data from database
-     * @return cleared database with message
-     */
+    private Database database;
 
-    private Database db;
+    public ClearService() {database = new Database();}
 
-    public ClearService() {db = new Database();}
-
-    public ClearResult clear() {
+    public ClearResult clear() throws DataAccessException {
         ClearResult clearResult = new ClearResult();
         try {
-            db.openConnection();
-            db.clearAll();
-
-            db.closeConnection(true);
-
+            database.openConnection();
+            database.clearAll();
+            database.closeConnection(true);
+            clearResult.setMessage("Clear succeeded");
+            return clearResult;
 
         } catch (DataAccessException e) {
-            e.printStackTrace();
             clearResult.setMessage(e.getMessage());
-
-            try {
-                db.closeConnection(false);
-            } catch (DataAccessException d) {
-                clearResult.setMessage(d.getMessage());
-                return clearResult;
-            }
+            database.closeConnection(false);
             return clearResult;
         }
-        clearResult.setMessage("Clear succeeded");
-        return clearResult;
-
     }
 }

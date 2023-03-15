@@ -3,6 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import dataaccess.DataAccessException;
 import result.ClearResult;
 import service.ClearService;
 
@@ -35,6 +36,8 @@ public class ClearHandler extends RootHandler {
             writeString(jsonStr, respBody);
             respBody.close();
 
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 

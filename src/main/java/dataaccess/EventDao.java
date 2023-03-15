@@ -86,8 +86,6 @@ public class EventDao {
             stmt.executeUpdate("drop table if exists Event");
             stmt.executeUpdate("create table Event (eventID VARCHAR(50) NOT NULL PRIMARY KEY, associatedUsername VARCHAR(50) NOT NULL, peronID VARCHAR(50) NOT NULL, latitude REAL NOT NULL, " +
                     "longitude REAL NOT NULL, country VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, eventType VARCHAR(50) NOT NULL, year INT NOT NULL, CONSTRAINT event_info UNIQUE (eventID))");
-
-
         }
         catch (SQLException e) {
             throw new DataAccessException("error clearing table");
@@ -166,10 +164,9 @@ public class EventDao {
         return eventFinal;
     }
 
-    public int generateRootEvent(Person root) throws DataAccessException {
+    public int generateEvents(Person root) throws DataAccessException {
         int rootBirthYear = 1900;
-
-        //making root's birth
+        
         Event birth = new Event();
         Random rand = new Random();
 
@@ -185,64 +182,47 @@ public class EventDao {
         birth.setEventType("Birth");
         birth.setYear(rootBirthYear);
 
-        insert(birth); //inserts birth into database
+        insert(birth);
 
-        //Making root's baptism
-        Event baptism = new Event();
-        baptism.setEventID(UUID.randomUUID().toString());
-        baptism.setAssociatedUsername(root.getAssociatedUsername());
-        baptism.setPersonID(root.getPersonID());
+        //Making root's firstDate
+        Event firstDate = new Event();
+        firstDate.setEventID(UUID.randomUUID().toString());
+        firstDate.setAssociatedUsername(root.getAssociatedUsername());
+        firstDate.setPersonID(root.getPersonID());
         r = rand.nextInt(977);
         randLocation = locationData.getLocations()[r];
-        baptism.setLatitude(randLocation.getLatitude());
-        baptism.setLongitude(randLocation.getLongitude());
-        baptism.setCountry(randLocation.getCountry());
-        baptism.setCity(randLocation.getCity());
-        baptism.setEventType("Baptism");
-        baptism.setYear(rootBirthYear + 15);  //He's a convert
+        firstDate.setLatitude(randLocation.getLatitude());
+        firstDate.setLongitude(randLocation.getLongitude());
+        firstDate.setCountry(randLocation.getCountry());
+        firstDate.setCity(randLocation.getCity());
+        firstDate.setEventType("First Date");
+        firstDate.setYear(rootBirthYear + 15);
 
-        insert(baptism);
+        insert(firstDate);
 
-        //Making root's adventure
-        Event adventure = new Event();
-        adventure.setEventID(UUID.randomUUID().toString());
-        adventure.setAssociatedUsername(root.getAssociatedUsername());
-        adventure.setPersonID(root.getPersonID());
+        Event graduation = new Event();
+        graduation.setEventID(UUID.randomUUID().toString());
+        graduation.setAssociatedUsername(root.getAssociatedUsername());
+        graduation.setPersonID(root.getPersonID());
         r = rand.nextInt(977);
         randLocation = locationData.getLocations()[r];
-        adventure.setLatitude(randLocation.getLatitude());
-        adventure.setLongitude(randLocation.getLongitude());
-        adventure.setCountry(randLocation.getCountry());
-        adventure.setCity(randLocation.getCity());
-        adventure.setEventType("Adventure");
-        adventure.setYear(rootBirthYear + 16);
+        graduation.setLatitude(randLocation.getLatitude());
+        graduation.setLongitude(randLocation.getLongitude());
+        graduation.setCountry(randLocation.getCountry());
+        graduation.setCity(randLocation.getCity());
+        graduation.setEventType("Graduation");
+        graduation.setYear(rootBirthYear + 24);
 
-        insert(adventure);
-
-        //Making root's puppy
-        Event purchase = new Event();
-        purchase.setEventID(UUID.randomUUID().toString());
-        purchase.setAssociatedUsername(root.getAssociatedUsername());
-        purchase.setPersonID(root.getPersonID());
-        r = rand.nextInt(977);
-        randLocation = locationData.getLocations()[r];
-        purchase.setLatitude(randLocation.getLatitude());
-        purchase.setLongitude(randLocation.getLongitude());
-        purchase.setCountry(randLocation.getCountry());
-        purchase.setCity(randLocation.getCity());
-        purchase.setEventType("Bought a puppy");
-        purchase.setYear(rootBirthYear + 10);
-
-        insert(purchase);
+        insert(graduation);
 
         return rootBirthYear;
     }
 
-    public int generateEventDataParents(Person mother, Person father, int orphanBirthYear) throws DataAccessException { //not recursive but will make 4 events for the given person, for now just birth
+    public int generateParentsEvent(Person mother, Person father, int rootYear) throws DataAccessException { //not recursive but will make 4 events for the given person, for now just birth
 
-        Event birth = new Event(); //making mothers's birth
+        Event birth = new Event();
         Random rand = new Random();
-        int parentsBirthDate = orphanBirthYear - 26;
+        int parentsBirthDate = rootYear - 45;
 
         birth.setEventID(UUID.randomUUID().toString());
         birth.setAssociatedUsername(mother.getAssociatedUsername());
@@ -256,9 +236,9 @@ public class EventDao {
         birth.setEventType("Birth");
         birth.setYear(parentsBirthDate);
 
-        insert(birth); //inserted mother's birth
+        insert(birth);
 
-        birth.setEventID(UUID.randomUUID().toString()); //Making father's birth
+        birth.setEventID(UUID.randomUUID().toString());
         birth.setAssociatedUsername(father.getAssociatedUsername());
         birth.setPersonID(father.getPersonID());
         r = rand.nextInt(977);
@@ -270,7 +250,7 @@ public class EventDao {
         birth.setEventType("Birth");
         birth.setYear(parentsBirthDate);
 
-        insert(birth); //inserts father's birth
+        insert(birth);
 
         Event death = new Event();  //making mothers death
 
@@ -284,7 +264,7 @@ public class EventDao {
         death.setCountry(randLocation.getCountry());
         death.setCity(randLocation.getCity());
         death.setEventType("Death");
-        death.setYear(orphanBirthYear + 56);
+        death.setYear(rootYear + 66);
 
         insert(death); //inserts mothers death
 
@@ -298,9 +278,9 @@ public class EventDao {
         death.setCountry(randLocation.getCountry());
         death.setCity(randLocation.getCity());
         death.setEventType("Death");
-        death.setYear(orphanBirthYear + 54);
+        death.setYear(rootYear + 67);
 
-        insert(death); //inserts father's death into database
+        insert(death);
 
         Event marriage = new Event();  //making marriage event for mother
 
@@ -316,7 +296,7 @@ public class EventDao {
         marriage.setEventType("Marriage");
         marriage.setYear(parentsBirthDate + 21);
 
-        insert(marriage); //inserts marriage in for mother
+        insert(marriage);
 
         marriage.setEventID(UUID.randomUUID().toString());
         marriage.setAssociatedUsername(father.getAssociatedUsername());
@@ -328,39 +308,8 @@ public class EventDao {
         marriage.setEventType("Marriage");
         marriage.setYear(parentsBirthDate + 21);
 
-        insert(marriage); //inserts marriage in for father
+        insert(marriage);
 
-        Event boughtHouse = new Event(); //making bought house for mother
-
-        boughtHouse.setEventID(UUID.randomUUID().toString());
-        boughtHouse.setAssociatedUsername(mother.getAssociatedUsername());
-        boughtHouse.setPersonID(mother.getPersonID());
-        r = rand.nextInt(977);
-        randLocation = locationData.getLocations()[r];
-        boughtHouse.setLatitude(randLocation.getLatitude());
-        boughtHouse.setLongitude(randLocation.getLongitude());
-        boughtHouse.setCountry(randLocation.getCountry());
-        boughtHouse.setCity(randLocation.getCity());
-        boughtHouse.setEventType("Bought house");
-        boughtHouse.setYear(parentsBirthDate + 23);
-
-        insert(boughtHouse); //inserting bought house
-
-        Event mission = new Event(); //making mission for father
-
-        mission.setEventID(UUID.randomUUID().toString());
-        mission.setAssociatedUsername(father.getAssociatedUsername());
-        mission.setPersonID(father.getPersonID());
-        r = rand.nextInt(977);
-        randLocation = locationData.getLocations()[r];
-        mission.setLatitude(randLocation.getLatitude());
-        mission.setLongitude(randLocation.getLongitude());
-        mission.setCountry(randLocation.getCountry());
-        mission.setCity(randLocation.getCity());
-        mission.setEventType("Served Mission");
-        mission.setYear(parentsBirthDate + 19);
-
-        insert(mission); //inserting mission
 
         return parentsBirthDate;
     }
