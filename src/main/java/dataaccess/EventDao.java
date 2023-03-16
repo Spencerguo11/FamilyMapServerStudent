@@ -218,7 +218,7 @@ public class EventDao {
         return rootBirthYear;
     }
 
-    public int generateParentsEvent(Person mother, Person father, int rootYear) throws DataAccessException { //not recursive but will make 4 events for the given person, for now just birth
+    public int generateParentsEventandYear(Person mother, Person father, int rootYear) throws DataAccessException { //not recursive but will make 4 events for the given person, for now just birth
 
         Event birth = new Event();
         Random rand = new Random();
@@ -315,33 +315,6 @@ public class EventDao {
     }
 
 
-//    public String tableToString() throws DataAccessException {
-//        StringBuilder out = new StringBuilder();
-//        String sql = "select * from Event";
-//        try (PreparedStatement stmt = conn.prepareStatement(sql)){
-//            ResultSet rs = null;
-//            rs = stmt.executeQuery();
-//            while (rs.next()) {
-//                String eventID = rs.getString(1);
-//                String assocatedUsername = rs.getString(2);
-//                String personId = rs.getString(3);
-//                Float latitude = rs.getFloat(4);
-//                Float longitude = rs.getFloat(5);
-//                String country = rs.getString(6);
-//                String city = rs.getString(7);
-//                String eventType = rs.getString(8);
-//                int year = rs.getInt(9);
-//
-//                out.append((eventID + "\t" + assocatedUsername + "\t" + personId + "\t" + latitude + "\t" + longitude + "\t" + country + "\t" + city + "\t" + eventType + "\t" + year + "\n"));
-//
-//            }
-//
-//        }
-//        catch (SQLException e) {
-//            throw new DataAccessException("error toString table");
-//        }
-//        return out.toString();
-//    }
 
 }
 

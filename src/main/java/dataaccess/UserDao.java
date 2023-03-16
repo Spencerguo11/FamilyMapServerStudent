@@ -42,32 +42,32 @@ public class UserDao {
 
     }
 
-    /**
-     * find user in table using userID
-     * @param username
-     * @return
-     * @throws DataAccessException
-     */
-    public boolean find(String username) throws DataAccessException {
-        String sql = "select * from User WHERE username = '" + username + "'";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)){
-
-            ResultSet rs = null;
-
-            rs = stmt.executeQuery();
-
-            if (!rs.next() ) {
-                throw new DataAccessException("error finding username");
-            } else {
-                return true;
-            }
-
-        }
-        catch (SQLException e) {
-            throw new DataAccessException("error finding username");
-        }
-
-    }
+//    /**
+//     * find user in table using userID
+//     * @param username
+//     * @return
+//     * @throws DataAccessException
+//     */
+//    public boolean find(String username) throws DataAccessException {
+//        String sql = "select * from User WHERE username = '" + username + "'";
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+//
+//            ResultSet rs = null;
+//
+//            rs = stmt.executeQuery();
+//
+//            if (!rs.next() ) {
+//                throw new DataAccessException("error finding username");
+//            } else {
+//                return true;
+//            }
+//
+//        }
+//        catch (SQLException e) {
+//            throw new DataAccessException("error finding username");
+//        }
+//
+//    }
 
     /**
      * clears user table
@@ -156,42 +156,7 @@ public class UserDao {
 
         return personID;
     }
-//
-//    public String tableToString() throws DataAccessException{
-//        StringBuilder out = new StringBuilder();
-//        try {
-//            PreparedStatement stmt = null;
-//            ResultSet rs = null;
-//            try {
-//                String sql = "select * from User";
-//                stmt = conn.prepareStatement(sql);
-//
-//                rs = stmt.executeQuery();
-//                while (rs.next()) {
-//                    String word = rs.getString(1);
-//                    String password = rs.getString(2);
-//                    String email = rs.getString(3);
-//                    String firstName = rs.getString(4);
-//                    String lastName = rs.getString(5);
-//                    String gender = rs.getString(6);
-//                    String personID = rs.getString(7);
-//                    out.append((word + "\t" + password + "\t" + email + "\t" + firstName + "\t" + lastName + "\t" + gender + "\t" + personID + "\n"));
-//                }
-//            }
-//            finally {
-//                if (rs != null) {
-//                    rs.close();
-//                }
-//                if (stmt != null) {
-//                    stmt.close();
-//                }
-//            }
-//        }
-//        catch (SQLException e) {
-//            throw new DataAccessException("error toString table");
-//        }
-//        return out.toString();
-//    }
+
 
     public void deleteUser(User user) throws DataAccessException {
         try {

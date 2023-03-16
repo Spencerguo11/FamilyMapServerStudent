@@ -80,7 +80,7 @@ public class PersonDao {
         updateSpouse(father, mother.getPersonID());
         updateSpouse(mother, father.getPersonID());
 
-        int parentYear = eventDao.generateParentsEvent(mother, father, rootYear);
+        int parentYear = eventDao.generateParentsEventandYear(mother, father, rootYear);
 
         numGenerations--;
         if (numGenerations > 0){
@@ -165,7 +165,7 @@ public class PersonDao {
         }
     }
 
-        private void updateParent(Person person, String parentID, String parentType) throws DataAccessException {
+    private void updateParent(Person person, String parentID, String parentType) throws DataAccessException {
         try {
             Statement stmt = null;
             try {
@@ -266,43 +266,6 @@ public class PersonDao {
         }
     }
 
-//    public String tableToString() throws DataAccessException{
-//        StringBuilder out = new StringBuilder();
-//        try {
-//            PreparedStatement stmt = null;
-//            ResultSet rs = null;
-//            try {
-//                String sql = "select * from Person";
-//                stmt = conn.prepareStatement(sql);
-//
-//                rs = stmt.executeQuery();
-//                while (rs.next()) {
-//                    String personID = rs.getString(1);
-//                    String associatedUsername = rs.getString(2);
-//                    String firstName = rs.getString(3);
-//                    String lastName = rs.getString(4);
-//                    String gender = rs.getString(5);
-//                    String fatherID = rs.getString(6);
-//                    String motherID = rs.getString(7);
-//                    String spouseID = rs.getString(8);
-//                    out.append((personID + "\t" + associatedUsername + "\t" + firstName + "\t" + lastName + "\t"
-//                            + gender + "\t" + fatherID + "\t" + motherID + "\t" + spouseID + "\n"));
-//                }
-//            }
-//            finally {
-//                if (rs != null) {
-//                    rs.close();
-//                }
-//                if (stmt != null) {
-//                    stmt.close();
-//                }
-//            }
-//        }
-//        catch (SQLException e) {
-//            throw new DataAccessException("error toString table");
-//        }
-//        return out.toString();
-//    }
 
     public void deleteAllPeopleofUser(User user) throws DataAccessException {
         try {
